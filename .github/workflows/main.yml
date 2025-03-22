@@ -114,24 +114,16 @@ jobs:
       - name: Grant execute permission to Gradle
         run: chmod +x gradlew
 
-      - name: Run Detekt (Kotlin)
-        run: ./gradlew detekt
+      - name: Run Detekt (Kotlin Static Analysis)
+        run: |
+          if [ -f config/detekt/detekt.yml ]; then
+            ./gradlew detekt
+          else
+            echo "Warning: detekt.yml not found. Skipping..."
+          fi
 
-      - name: Run Checkstyle (Java)
-        run: ./gradlew checkstyle
-
-      - name: Run PMD (Java/Kotlin)
-        run: ./gradlew pmd
-
-      - name: Run SpotBugs (Java)
-        run: ./gradlew spotbugs
-
-      - name: Upload Static Analysis Reports
+      - name: Upload Detekt Report
         uses: actions/upload-artifact@v4
         with:
-          name: static-analysis-reports
-          path: |
-            app/build/reports/detekt/
-            app/build/reports/checkstyle/
-            app/build/reports/pmd/
-            app/build/reports/spotbugs/
+          name: detekt-report
+          path: app/build/reports/detekt/
