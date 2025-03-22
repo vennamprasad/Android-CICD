@@ -61,7 +61,7 @@ jobs:
           path: app/build/reports/tests/testDebugUnitTest/
 
   instrumentation-test:
-    needs: [unit-test]  # Runs only after unit tests pass
+    needs: [ unit-test ]
     runs-on: macos-latest  # Required for running an Android Emulator
     steps:
       - name: Checkout the code
@@ -82,10 +82,56 @@ jobs:
           api-level: 30
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew connectedCheck
+          script: adb devices
+
+      - name: Wait for Emulator to Boot
+        run: |
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+          adb devices  # Check if the emulator is running
+
+      - name: Run Instrumentation Tests
+        run: ./gradlew connectedDebugAndroidTest
 
       - name: Upload Instrumentation Test Report
         uses: actions/upload-artifact@v4
         with:
           name: instrumentation-test-report
           path: app/build/reports/androidTests/connected/
+
+  static-analysis:
+    needs: [ lint ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
+
+      - name: Run Detekt (Kotlin)
+        run: ./gradlew detekt
+
+      - name: Run Checkstyle (Java)
+        run: ./gradlew checkstyle
+
+      - name: Run PMD (Java/Kotlin)
+        run: ./gradlew pmd
+
+      - name: Run SpotBugs (Java)
+        run: ./gradlew spotbugs
+
+      - name: Upload Static Analysis Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis-reports
+          path: |
+            app/build/reports/detekt/
+            app/build/reports/checkstyle/
+            app/build/reports/pmd/
+            app/build/reports/spotbugs/
