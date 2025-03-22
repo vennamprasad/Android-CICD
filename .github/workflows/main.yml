@@ -10,7 +10,6 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -22,7 +21,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
-          java-version: '17'  # Set this according to your project's requirements
+          java-version: '17'  # Adjust based on project requirements
 
       - name: Grant execute permission to Gradle
         run: chmod +x gradlew
@@ -32,23 +31,31 @@ jobs:
 
       - name: Upload HTML Lint Report
         uses: actions/upload-artifact@v4
-
         with:
           name: lint.html
           path: app/build/reports/lint-results-debug.html
 
   unit-test:
-    needs: [lint]
+    needs: [lint]  # Runs only after the lint job completes
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Run tests
-        uses: ./gradlew lintDebug
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
 
-      - name: Upload test report
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Upload Unit Test Report
         uses: actions/upload-artifact@v4
         with:
-          name: unit_test_report
+          name: unit-test-report
           path: app/build/reports/tests/testDebugUnitTest/
