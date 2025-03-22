@@ -4,13 +4,10 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -21,11 +18,20 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Run Lint
-        uses: ./gradlew lintDebug
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'  # Set this according to your project's requirements
 
-      - name: Upload html test report
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
+
+      - name: Run Lint
+        run: ./gradlew lintDebug
+
+      - name: Upload HTML Lint Report
         uses: actions/upload-artifact@v4
         with:
-          name: index.html
+          name: lint-report
           path: app/build/reports/lint-results-debug.html
