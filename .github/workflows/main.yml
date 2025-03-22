@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
-          java-version: '17'  # Adjust based on project requirements
+          java-version: '17'
 
       - name: Grant execute permission to Gradle
         run: chmod +x gradlew
@@ -32,11 +32,11 @@ jobs:
       - name: Upload HTML Lint Report
         uses: actions/upload-artifact@v4
         with:
-          name: lint.html
+          name: lint-report
           path: app/build/reports/lint-results-debug.html
 
   unit-test:
-    needs: [lint]  # Runs only after the lint job completes
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -59,3 +59,33 @@ jobs:
         with:
           name: unit-test-report
           path: app/build/reports/tests/testDebugUnitTest/
+
+  instrumentation-test:
+    needs: [unit-test]  # Runs only after unit tests pass
+    runs-on: macos-latest  # Required for running an Android Emulator
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
+
+      - name: Start Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew connectedCheck
+
+      - name: Upload Instrumentation Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumentation-test-report
+          path: app/build/reports/androidTests/connected/
