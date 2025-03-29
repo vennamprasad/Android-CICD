@@ -60,57 +60,77 @@ jobs:
           name: unit-test-report
           path: app/build/reports/tests/testDebugUnitTest/
 
-  instrumentation-test:
-    needs: [ unit-test ]
-    runs-on: macos-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
+  name: Android CI
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '17'
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
+    workflow_dispatch:
 
-      - name: Set up Android SDK
-        run: |
-          export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
-          export PATH=$ANDROID_SDK_ROOT/platform-tools:$PATH
-          export PATH=$ANDROID_SDK_ROOT/emulator:$PATH
-          sdkmanager --install "system-images;android-30;google_apis;x86_64"
-          sdkmanager --licenses
+  jobs:
+    instrumentation-test:
+      needs: [ unit-test ]
+      runs-on: macos-latest  # macOS is required for Android Emulator
+      steps:
+        - name: Checkout the code
+          uses: actions/checkout@v4
 
-      - name: Grant execute permission to Gradle
-        run: chmod +x gradlew
+        - name: Set up JDK
+          uses: actions/setup-java@v3
+          with:
+            distribution: 'corretto'
+            java-version: '17'
 
-      - name: Start Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          arch: x86_64
-          profile: Nexus 6
-          disable-animations: true
-          emulator-options: "-no-window -gpu swiftshader_indirect -no-audio -no-boot-anim"
-          script: adb devices
+        - name: Set up Android SDK
+          run: |
+            echo "Setting up Android SDK"
+            export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+            export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH
+            echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+            echo "PATH=$PATH" >> $GITHUB_ENV
 
-      - name: Wait for Emulator to Boot
-        run: |
-          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
-          adb devices  # Check if the emulator is running
+        - name: Install AVD and system images
+          run: |
+            sdkmanager --install "system-images;android-30;google_apis;x86_64"
+            sdkmanager --licenses
 
-      - name: Check Emulator Status
-        run: adb shell getprop sys.boot_completed
+        - name: Grant execute permission to Gradle
+          run: chmod +x gradlew
 
-      - name: Run Instrumentation Tests
-        run: ./gradlew connectedDebugAndroidTest
+        - name: Start Emulator
+          uses: reactivecircus/android-emulator-runner@v2
+          with:
+            api-level: 30
+            arch: x86_64
+            profile: Nexus 6
+            disable-animations: true
+            emulator-options: "-no-window -gpu swiftshader_indirect -no-audio -no-boot-anim"
+            script: adb devices
 
-      - name: Upload Instrumentation Test Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: instrumentation-test-report
-          path: app/build/reports/androidTests/connected/
+        - name: Wait for Emulator to Boot
+          run: |
+            echo "Waiting for emulator to fully boot..."
+            adb wait-for-device
+            sleep 60  # Ensure the emulator fully boots
+            adb shell getprop sys.boot_completed
+
+        - name: Verify ADB Connection
+          run: |
+            echo "Checking connected devices..."
+            adb devices
+
+        - name: Run Instrumentation Tests
+          run: ./gradlew connectedDebugAndroidTest --stacktrace
+
+        - name: Upload Instrumentation Test Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: instrumentation-test-report
+            path: app/build/reports/androidTests/connected/
 
   static-analysis:
     needs: [ lint ]
@@ -166,4 +186,15 @@ jobs:
         with:
           name: app-debug.apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Set up Keystore Environment Variables
+        run: |
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
+
+
+      - name: Decode and Save Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > $GITHUB_WORKSPACE/release-keystore.jks
+
 
