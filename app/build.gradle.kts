@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,9 +12,19 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+// Task to verify keystore exists
+tasks.register("checkKeystore") {
+    doLast {
+        val keystoreFile = file("${rootDir}/release-keystore.jks")
+        if (!keystoreFile.exists()) {
+            throw GradleException("Keystore file not found! Ensure it's added in GitHub Actions.")
+        }
+    }
+}
+
+tasks.withType<Detekt>().configureEach {
     reports {
-        html.required.set(true)  // Generate HTML report
+        html.required.set(true)
         xml.required.set(false)
         txt.required.set(false)
     }
@@ -32,13 +44,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("${rootDir}/release-keystore.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
-        release {
+        debug {
+            applicationIdSuffix = ".debug"
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        }
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")  // Apply signing
         }
     }
     compileOptions {
