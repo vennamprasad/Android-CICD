@@ -76,16 +76,14 @@ jobs:
       - name: Grant execute permission to Gradle
         run: chmod +x gradlew
 
-      - name: List available AVDs
-        run: |
-          $ANDROID_HOME/emulator/emulator -list-avds
-
       - name: Start Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
           arch: x86_64
           profile: Nexus 6
+          disable-animations: true
+          emulator-options: "-no-window -gpu swiftshader_indirect -no-audio -no-boot-anim"
           script: adb devices
 
       - name: Wait for Emulator to Boot
