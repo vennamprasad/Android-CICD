@@ -1,6 +1,6 @@
 [versions]
 accompanist = "0.37.0"
-androidGradlePlugin = "8.8.2"
+androidGradlePlugin = "8.9.1"
 androidx-activity-compose = "1.10.1"
 androidx-appcompat = "1.7.0"
 androidx-compose-bom = "2025.03.01"
@@ -26,8 +26,6 @@ coroutines = "1.10.1"
 gradle-versions = "0.52.0"
 hilt = "2.55"
 hiltExt = "1.2.0"
-# @pin When updating to AGP 7.4.0-alpha10 and up we can update this https://developer.android.com/studio/write/java8-support#library-desugaring-versions
-jdkDesugar = "2.1.5"
 junit = "4.13.2"
 kotlin = "2.1.10"
 kotlinx-serialization-json = "1.7.3"
@@ -39,8 +37,18 @@ minSdk = "21"
 okhttp = "4.12.0"
 room = "2.6.1"
 # @keep
+sdpAndroid = "1.1.1"
+sspAndroid = "1.1.1"
 targetSdk = "33"
 detekt = "1.23.6"
+retrofit = "2.11.0"
+gson = "2.11.0"
+timber = "5.0.1"
+paging = "3.3.6"
+material = "1.12.0"
+runtimeAndroid = "1.7.8"
+uiUnitAndroid = "1.7.8"
+uiAndroid = "1.7.8"
 
 
 [libraries]
@@ -104,7 +112,6 @@ androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", 
 androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
 androidx-window-core = { module = "androidx.window:window-core", version.ref = "androidx-window" }
 coil-kt-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
-core-jdk-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "jdkDesugar" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
@@ -117,6 +124,17 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+sdp-android = { module = "com.intuit.sdp:sdp-android", version.ref = "sdpAndroid" }
+ssp-android = { module = "com.intuit.ssp:ssp-android", version.ref = "sspAndroid" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
+androidx-ui-unit-android = { group = "androidx.compose.ui", name = "ui-unit-android", version.ref = "uiUnitAndroid" }
+androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
