@@ -42,8 +42,43 @@ jobs:
           name: lint-report
           path: app/build/reports/lint-results-debug.html
 
-  unit-test:
+  static-analysis:
     needs: [ lint ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
+
+      - name: Run Detekt (Kotlin Static Analysis)
+        run: ./gradlew detekt
+
+      - name: Upload Detekt Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: app/build/reports/detekt/
+
+  unit-test:
+    needs: [ static-analysis ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -78,7 +113,7 @@ jobs:
           path: app/build/reports/tests/testDebugUnitTest/
 
   build-apk:
-    needs: [ unit-test ]
+    needs: [ unit-test, static-analysis ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
