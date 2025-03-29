@@ -73,13 +73,17 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
 
-      - name: Grant execute permission to Gradle
-        run: chmod +x gradlew
-
-      - name: Install AVD System Image
+      - name: Set up Android SDK
         run: |
+          export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
+          export PATH=$ANDROID_SDK_ROOT/platform-tools:$PATH
+          export PATH=$ANDROID_SDK_ROOT/emulator:$PATH
           sdkmanager --install "system-images;android-30;google_apis;x86_64"
           sdkmanager --licenses
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
 
       - name: Start Emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -87,17 +91,17 @@ jobs:
           api-level: 30
           arch: x86_64
           profile: Nexus 6
-          boot-timeout: 600
-          script: |
-            adb wait-for-device
-            adb shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
-            adb devices
+          disable-animations: true
+          emulator-options: "-no-window -gpu swiftshader_indirect -no-audio -no-boot-anim"
+          script: adb devices
 
-      - name: Restart ADB if Emulator Not Found
+      - name: Wait for Emulator to Boot
         run: |
-          adb kill-server
-          adb start-server
-          adb devices
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+          adb devices  # Check if the emulator is running
+
+      - name: Check Emulator Status
+        run: adb shell getprop sys.boot_completed
 
       - name: Run Instrumentation Tests
         run: ./gradlew connectedDebugAndroidTest
