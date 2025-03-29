@@ -76,6 +76,10 @@ jobs:
       - name: Grant execute permission to Gradle
         run: chmod +x gradlew
 
+      - name: List available AVDs
+        run: |
+          $ANDROID_HOME/emulator/emulator -list-avds
+
       - name: Start Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -88,6 +92,9 @@ jobs:
         run: |
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
           adb devices  # Check if the emulator is running
+
+      - name: Check Emulator Status
+        run: adb shell getprop sys.boot_completed
 
       - name: Run Instrumentation Tests
         run: ./gradlew connectedDebugAndroidTest
@@ -128,39 +135,27 @@ jobs:
           name: detekt-report
           path: app/build/reports/detekt/
 
-  build-apk:
-    needs: [ static-analysis, unit-test ]  # Ensures this runs after tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
+  needs: [ unit-test ]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '17'
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'corretto'
+        java-version: '17'
 
-      - name: Grant execute permission to Gradle
-        run: chmod +x gradlew
+    - name: Grant execute permission to Gradle
+      run: chmod +x gradlew
 
-      - name: Build APK
-        run: ./gradlew assembleDebug
+    - name: Build APK
+      run: ./gradlew assembleDebug
 
-      - name: Upload APK as an artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Set up Keystore Environment Variables
-        run: |
-          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
-          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
-          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
-
-
-      - name: Decode and Save Keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > $GITHUB_WORKSPACE/release-keystore.jks
-
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
 
