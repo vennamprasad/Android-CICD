@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import prasad.vennam.android.R
 import prasad.vennam.android.presentation.navgation.Route
 import prasad.vennam.android.ui.theme.primaryDark
