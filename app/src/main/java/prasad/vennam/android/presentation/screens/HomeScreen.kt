@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -77,9 +76,9 @@ fun MovieRow(movie: TrendingMovie) {
             painter = rememberAsyncImagePainter(BuildConfig.IMAGE_BASE_URL + movie.posterPath),
             contentDescription = "Movie Poster",
             modifier = Modifier
-                .weight(0.50f) // 40% width
-                .height(150.sdp)
-                .clip(RoundedCornerShape(4.sdp))
+                .weight(0.4f) // 40% width
+                .height(60.sdp)
+                .clip(RoundedCornerShape(8.sdp))
                 .background(Color.Gray),
             contentScale = ContentScale.Crop
         )
@@ -87,7 +86,7 @@ fun MovieRow(movie: TrendingMovie) {
         Spacer(modifier = Modifier.width(8.sdp))
 
         Column(
-            modifier = Modifier.weight(0.50f)
+            modifier = Modifier.weight(0.6f)
         ) {
             MovieDetailRow("Title", movie.title)
             MovieDetailRow("Rating", movie.voteAverage.toString())
@@ -105,8 +104,8 @@ fun MovieDetailRow(label: String, value: String) {
             .padding(vertical = 2.sdp),
         horizontalArrangement = Arrangement.spacedBy(10.sdp)
     ) {
-        Text(text = "$label:", fontWeight = FontWeight.Bold, fontSize = 14.ssp)
-        Text(text = value, fontSize = 14.ssp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = "$label:", fontWeight = FontWeight.Bold, fontSize = 12.ssp)
+        Text(text = value, fontSize = 12.ssp, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
