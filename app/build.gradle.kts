@@ -50,6 +50,12 @@ android {
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // add custom fields to the build config
+        buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+        buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/original\"")
+        buildConfigField("String", "API_KEY", "\"9f1c9fef225da8d56317b73f985995b0\"")
+        buildConfigField("String", "Authorization", "\"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZjFjOWZlZjIyNWRhOGQ1NjMxN2I3M2Y5ODU5OTViMCIsIm5iZiI6MTU3NjcyNDUyOS4wNDksInN1YiI6IjVkZmFlODMxNjA5NzUwMDAyMTM0MjAwYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.f5jYPZtnrMFbootA-jK15zUwBou6tyLiYTZO8uvDDiA\"")
     }
 
     signingConfigs {
@@ -86,6 +92,8 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
+        viewBinding = true
     }
 
     packaging.resources {
@@ -130,6 +138,7 @@ dependencies {
     implementation(libs.accompanist.adaptive)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.glance)
