@@ -1,3 +1,8 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode.*
+
+include(":sdp")
+
+
 pluginManagement {
     repositories {
         google {
@@ -12,7 +17,7 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
