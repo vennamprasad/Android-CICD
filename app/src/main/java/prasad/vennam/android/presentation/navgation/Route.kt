@@ -19,5 +19,5 @@ sealed class Route(val route: String) {
     data object Notifications : Route("notifications")
     data object Search : Route("search")
     data class ExternalWebViewWithUrl(val url: URL) : Route("webViewWithUrl")
-
+    data object MovieDetails : Route("movie_details")
 }

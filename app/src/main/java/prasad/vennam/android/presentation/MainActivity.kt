@@ -23,13 +23,11 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             AppTheme(ColorSchemeType.DYNAMIC) {
                 Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     content = { padding ->
                         AppNavGraph(
                             navController,
-                            modifier = Modifier
-                                .padding(padding)
+                            modifier = Modifier.padding(padding)
                         )
                     }
                 )
