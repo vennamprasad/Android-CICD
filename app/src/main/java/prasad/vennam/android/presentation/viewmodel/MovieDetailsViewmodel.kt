@@ -12,6 +12,9 @@ import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
 import prasad.vennam.android.domain.model.Genre
 import prasad.vennam.android.domain.model.MovieCast
 import prasad.vennam.android.domain.model.MovieFullDetails
+import prasad.vennam.android.domain.model.NowPlayingMovie
+import prasad.vennam.android.domain.model.TrendingMovie
+import prasad.vennam.android.domain.model.UpcomingMovie
 import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
 
@@ -37,21 +40,30 @@ class MovieDetailsViewmodel @Inject constructor(
             try {
                 val movieDetailFlow = movieRemoteRepository.fetchTrendingMovieDetailData(id)
                 val movieCastFlow = movieRemoteRepository.fetchMovieCast(id)
+                val upcomingMoviesFlow = movieRemoteRepository.fetchUpcomingMovies()
+                val nowPlayingMoviesFlow = movieRemoteRepository.fetchNowPlayingMovies()
+                val similarMoviesFlow = movieRemoteRepository.fetchSimilarMovies(id)
 
-                combine(movieDetailFlow, movieCastFlow) { detailViewState, castViewState ->
+                combine(
+                    movieDetailFlow,
+                    movieCastFlow,
+                    upcomingMoviesFlow,
+                    nowPlayingMoviesFlow,
+                    similarMoviesFlow
+                ) { detailViewState, castViewState, upcomingMoviesState, nowPlayingMovies, similarMovies ->
                     val movieDetail = detailViewState.data
                     val castList = castViewState.data?.cast ?: emptyList()
 
                     if (movieDetail != null) {
                         val fullDetail = MovieFullDetails(
-                            id = movieDetail.id ?: 0,
-                            title = movieDetail.title.orEmpty(),
-                            voteAverage = movieDetail.voteAverage ?: 0.0,
-                            originalLanguage = movieDetail.originalLanguage.orEmpty(),
+                            id = movieDetail.id,
+                            title = movieDetail.title,
+                            voteAverage = movieDetail.voteAverage,
+                            originalLanguage = movieDetail.originalLanguage,
                             backdropPath = movieDetail.backdropPath.orEmpty(),
-                            overview = movieDetail.overview.orEmpty(),
-                            genres = movieDetail.genreResponses?.map {
-                                Genre(id = it.id ?: 0, name = it.name.orEmpty())
+                            overview = movieDetail.overview,
+                            genres = movieDetail.genres?.map {
+                                Genre(id = it.id, name = it.name)
                             } ?: emptyList(),
                             posterPath = movieDetail.posterPath.orEmpty(),
                             castList = castList.sortedByDescending {
@@ -64,7 +76,47 @@ class MovieDetailsViewmodel @Inject constructor(
                                     profilePath = it.profilePath.orEmpty(),
                                     character = it.character.orEmpty()
                                 )
-                            }
+                            },
+                            nowPlayingMovies = nowPlayingMovies.data?.results?.map {
+                                NowPlayingMovie(
+                                    id = it.id ?: 0, poster = it.posterPath ?: ""
+                                )
+                            } ?: emptyList(),
+                            upComingMovies = upcomingMoviesState.data?.results?.map {
+                                UpcomingMovie(
+                                    id = it.id ?: 0, poster = it.posterPath ?: ""
+                                )
+                            } ?: emptyList(),
+                            similarMovies = similarMovies.data?.results?.map {
+                                TrendingMovie(
+                                    id = it.id ?: 0,
+                                    title = it.title.orEmpty(),
+                                    voteAverage = it.voteAverage ?: 0.0,
+                                    originalLanguage = it.originalLanguage.orEmpty(),
+                                    posterPath = it.posterPath.orEmpty(),
+                                    backdropPath = it.backdropPath.orEmpty(),
+                                    overview = it.overview.orEmpty(),
+                                    isSaved = false
+                                )
+                            } ?: emptyList(),
+                            releaseDate = movieDetail.releaseDate,
+                            runtime = movieDetail.runtime,
+                            tagline = movieDetail.tagline,
+                            spokenLanguages = movieDetail.spokenLanguages.joinToString(", ") { it.englishName },
+                            budget = movieDetail.budget,
+                            revenue = movieDetail.revenue,
+                            productionCompanies = movieDetail.productionCompanies.joinToString(", ") { it.name },
+                            productionCountries = movieDetail.productionCountries.joinToString(", ") { it.name },
+                            externalLink = movieDetail.homepage,
+                            adult = movieDetail.adult,
+                            originCountry = movieDetail.originCountry.joinToString(", ") { it },
+                            imdbId = movieDetail.imdbId,
+                            originalTitle = movieDetail.originalTitle,
+                            popularity = movieDetail.popularity,
+                            status = movieDetail.status,
+                            video = movieDetail.video,
+                            voteCount = movieDetail.voteCount,
+                            productionCountriesName = movieDetail.productionCountries.joinToString(", ") { it.name },
                         )
 
                         ViewState.success(fullDetail)

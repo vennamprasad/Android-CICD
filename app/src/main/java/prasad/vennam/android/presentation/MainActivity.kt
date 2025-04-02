@@ -12,7 +12,6 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import prasad.vennam.android.presentation.navgation.AppNavGraph
 import prasad.vennam.android.ui.theme.AppTheme
-import prasad.vennam.android.ui.theme.ColorSchemeType
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -21,7 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            AppTheme(ColorSchemeType.DYNAMIC) {
+            AppTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     content = { padding ->

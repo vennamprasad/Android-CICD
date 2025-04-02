@@ -1,7 +1,6 @@
 package prasad.vennam.android.presentation.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,16 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import prasad.vennam.android.R
 import prasad.vennam.android.presentation.navgation.Route
-import prasad.vennam.android.ui.theme.primaryDark
-import prasad.vennam.android.ui.theme.primaryLight
 import prasad.vennam.android.ui.theme.sdp
 
 @Composable
 fun OnboardingScreen(
+    modifier: Modifier,
     onClick: (String) -> Unit
 ) {
 
@@ -39,21 +36,15 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState {
         listOfOnboarding.size
     }
-    Box {
+    Box(
+        modifier = modifier
+    ) {
         HorizontalPager(
             state = pagerState, modifier = Modifier.fillMaxSize(),
         ) { pageIndex ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                primaryLight,
-                                primaryDark
-                            )
-                        )
-                    )
             ) {
                 OnboardingPage(
                     image = listOfOnboarding[pageIndex],
@@ -70,7 +61,7 @@ fun OnboardingScreen(
         }
         Row(
             modifier = Modifier
-                .padding(PaddingValues(horizontal = 16.sdp, vertical = 48.sdp))
+                .padding(PaddingValues(horizontal = 16.sdp))
                 .align(Alignment.TopEnd)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.End,

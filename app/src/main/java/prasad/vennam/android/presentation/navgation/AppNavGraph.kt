@@ -1,6 +1,11 @@
 package prasad.vennam.android.presentation.navgation
 
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,14 +30,18 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
     ) {
         composable(Route.Splash.route) {
             AppSplashScreen(
-                delay = 1000L, onTimeout = {
+                delay = 1000L,
+                onTimeout = {
                     navController.navigate(Route.Onboarding.route) {
                         popUpTo(Route.Splash.route) { inclusive = true }
                     }
-                })
+                },
+                modifier = modifier
+            )
         }
         composable(Route.Onboarding.route) {
             OnboardingScreen(
+                modifier = modifier,
                 onClick = { route ->
                     when (route) {
                         Route.Login.route -> {
@@ -109,7 +118,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
 
         composable(
             route = "${Route.MovieDetails.route}/{movieId}",
-            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
         ) {
             val viewModel: MovieDetailsViewmodel = hiltViewModel()
 
@@ -119,6 +128,11 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
                 onBackClick = {
                     navController.popBackStack()
                 },
+                onItemClick = { movieId ->
+                    navController.navigate(Route.MovieDetails.route + "/${movieId}") {
+                        popUpTo(Route.MovieDetails.route) { inclusive = false }
+                    }
+                }
             )
         }
     }

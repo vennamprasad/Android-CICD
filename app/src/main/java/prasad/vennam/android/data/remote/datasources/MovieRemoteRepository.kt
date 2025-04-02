@@ -22,7 +22,7 @@ class MovieRemoteRepository @Inject constructor(
     private val movieService: MovieService,
 ) {
 
-    suspend fun fetchTrendingMovieListData(): Flow<ViewState<TrendingMovieListResponse>> {
+    fun fetchTrendingMovieListData(): Flow<ViewState<TrendingMovieListResponse>> {
         return flow {
 
             val trendingMovieListResponse = movieService.fetchAllTrendingMovies(1)
@@ -41,7 +41,7 @@ class MovieRemoteRepository @Inject constructor(
     }
 
 
-    suspend fun fetchTrendingMovieDetailData(id: Int): Flow<ViewState<MovieDetailResponse>> {
+    fun fetchTrendingMovieDetailData(id: Int): Flow<ViewState<MovieDetailResponse>> {
         return flow {
             val movieDetailResponse = movieService.fetchMovieDetailById(movieId = id)
             emit(ViewState.success(movieDetailResponse))
@@ -56,7 +56,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun fetchUpcomingMovies(): Flow<ViewState<UpcomingMovieListResponse>> {
+    fun fetchUpcomingMovies(): Flow<ViewState<UpcomingMovieListResponse>> {
         return flow {
             val upcomingMoviesResponse = movieService.fetchUpcomingMovies()
 
@@ -64,7 +64,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun fetchNowPlayingMovies(): Flow<ViewState<NowPlayingMovieListResponse>> {
+    fun fetchNowPlayingMovies(): Flow<ViewState<NowPlayingMovieListResponse>> {
         return flow {
             val nowPlayingMovieListResponse = movieService.fetchNowPlayingMovies()
 
@@ -72,12 +72,20 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun searchMovie(queryText: String): Flow<ViewState<TrendingMovieListResponse>> {
+    fun searchMovie(queryText: String): Flow<ViewState<TrendingMovieListResponse>> {
 
         return flow {
             val searchedTrendingMovieResponse = movieService.searchMovie(queryText = queryText)
 
             emit(ViewState.success(searchedTrendingMovieResponse))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun fetchSimilarMovies(id: Int): Flow<ViewState<TrendingMovieListResponse>> {
+        return flow {
+            val similarMovieResponse = movieService.fetchSimilarMovies(movieId = id)
+
+            emit(ViewState.success(similarMovieResponse))
         }.flowOn(Dispatchers.IO)
     }
 

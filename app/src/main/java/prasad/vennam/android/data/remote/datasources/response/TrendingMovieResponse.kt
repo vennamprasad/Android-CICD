@@ -24,4 +24,5 @@ data class TrendingMovieResponse(
 
     @SerializedName("overview")
     val overview: String? = null,
+
 )

@@ -31,5 +31,7 @@ interface MovieService {
     @GET("search/movie")
     suspend fun searchMovie(@Query("query") queryText: String): TrendingMovieListResponse
 
+    @GET("movie/{movie_id}/similar?api_key=${BuildConfig.API_KEY}")
+    suspend fun fetchSimilarMovies(@Path("movie_id") movieId: Int): TrendingMovieListResponse
 
 }
