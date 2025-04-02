@@ -44,14 +44,11 @@ class MovieRemoteRepository @Inject constructor(
     suspend fun fetchTrendingMovieDetailData(id: Int): Flow<ViewState<MovieDetailResponse>> {
         return flow {
             val movieDetailResponse = movieService.fetchMovieDetailById(movieId = id)
-
-            Timber.tag("MovieRepository").i("movieDetailResponse : $movieDetailResponse")
-
             emit(ViewState.success(movieDetailResponse))
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun fetchMovieCast(id: Int): Flow<ViewState<CastsResponse>> {
+    fun fetchMovieCast(id: Int): Flow<ViewState<CastsResponse>> {
         return flow {
             val castsResponse = movieService.fetchMovieCast(movieId = id)
 
