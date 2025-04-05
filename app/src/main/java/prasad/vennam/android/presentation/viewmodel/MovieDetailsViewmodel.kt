@@ -4,17 +4,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
-import prasad.vennam.android.domain.model.Genre
-import prasad.vennam.android.domain.model.MovieCast
+import prasad.vennam.android.data.remote.datasources.response.CastsResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
+import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.TrendingMovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
+import prasad.vennam.android.domain.mappers.mapToMovieFullDetails
 import prasad.vennam.android.domain.model.MovieFullDetails
-import prasad.vennam.android.domain.model.NowPlayingMovie
-import prasad.vennam.android.domain.model.TrendingMovie
-import prasad.vennam.android.domain.model.UpcomingMovie
 import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
 
@@ -38,11 +40,16 @@ class MovieDetailsViewmodel @Inject constructor(
     private fun getMovieDetailsBy(id: Int) {
         viewModelScope.launch {
             try {
-                val movieDetailFlow = movieRemoteRepository.fetchTrendingMovieDetailData(id)
-                val movieCastFlow = movieRemoteRepository.fetchMovieCast(id)
-                val upcomingMoviesFlow = movieRemoteRepository.fetchUpcomingMovies()
-                val nowPlayingMoviesFlow = movieRemoteRepository.fetchNowPlayingMovies()
-                val similarMoviesFlow = movieRemoteRepository.fetchSimilarMovies(id)
+                val movieDetailFlow: Flow<ViewState<MovieDetailResponse>> =
+                    movieRemoteRepository.fetchTrendingMovieDetailData(id)
+                val movieCastFlow: Flow<ViewState<CastsResponse>> =
+                    movieRemoteRepository.fetchMovieCast(id)
+                val upcomingMoviesFlow: Flow<ViewState<UpcomingMovieListResponse>> =
+                    movieRemoteRepository.fetchUpcomingMovies()
+                val nowPlayingMoviesFlow: Flow<ViewState<NowPlayingMovieListResponse>> =
+                    movieRemoteRepository.fetchNowPlayingMovies()
+                val similarMoviesFlow: Flow<ViewState<TrendingMovieListResponse>> =
+                    movieRemoteRepository.fetchSimilarMovies(id)
 
                 combine(
                     movieDetailFlow,
@@ -50,75 +57,16 @@ class MovieDetailsViewmodel @Inject constructor(
                     upcomingMoviesFlow,
                     nowPlayingMoviesFlow,
                     similarMoviesFlow
-                ) { detailViewState, castViewState, upcomingMoviesState, nowPlayingMovies, similarMovies ->
-                    val movieDetail = detailViewState.data
-                    val castList = castViewState.data?.cast ?: emptyList()
+                ) { movieDetailState, castViewState, upcomingMoviesState, nowPlayingMovies, similarMovies ->
 
-                    if (movieDetail != null) {
-                        val fullDetail = MovieFullDetails(
-                            id = movieDetail.id,
-                            title = movieDetail.title,
-                            voteAverage = movieDetail.voteAverage,
-                            originalLanguage = movieDetail.originalLanguage,
-                            backdropPath = movieDetail.backdropPath.orEmpty(),
-                            overview = movieDetail.overview,
-                            genres = movieDetail.genres?.map {
-                                Genre(id = it.id, name = it.name)
-                            } ?: emptyList(),
-                            posterPath = movieDetail.posterPath.orEmpty(),
-                            castList = castList.sortedByDescending {
-                                it.profilePath
-                            }.map {
-                                MovieCast(
-                                    id = it.id ?: 0,
-                                    name = it.name.orEmpty(),
-                                    gender = it.gender ?: 0,
-                                    profilePath = it.profilePath.orEmpty(),
-                                    character = it.character.orEmpty()
-                                )
-                            },
-                            nowPlayingMovies = nowPlayingMovies.data?.results?.map {
-                                NowPlayingMovie(
-                                    id = it.id ?: 0, poster = it.posterPath ?: ""
-                                )
-                            } ?: emptyList(),
-                            upComingMovies = upcomingMoviesState.data?.results?.map {
-                                UpcomingMovie(
-                                    id = it.id ?: 0, poster = it.posterPath ?: ""
-                                )
-                            } ?: emptyList(),
-                            similarMovies = similarMovies.data?.results?.map {
-                                TrendingMovie(
-                                    id = it.id ?: 0,
-                                    title = it.title.orEmpty(),
-                                    voteAverage = it.voteAverage ?: 0.0,
-                                    originalLanguage = it.originalLanguage.orEmpty(),
-                                    posterPath = it.posterPath.orEmpty(),
-                                    backdropPath = it.backdropPath.orEmpty(),
-                                    overview = it.overview.orEmpty(),
-                                    isSaved = false
-                                )
-                            } ?: emptyList(),
-                            releaseDate = movieDetail.releaseDate,
-                            runtime = movieDetail.runtime,
-                            tagline = movieDetail.tagline,
-                            spokenLanguages = movieDetail.spokenLanguages.joinToString(", ") { it.englishName },
-                            budget = movieDetail.budget,
-                            revenue = movieDetail.revenue,
-                            productionCompanies = movieDetail.productionCompanies.joinToString(", ") { it.name },
-                            productionCountries = movieDetail.productionCountries.joinToString(", ") { it.name },
-                            externalLink = movieDetail.homepage,
-                            adult = movieDetail.adult,
-                            originCountry = movieDetail.originCountry.joinToString(", ") { it },
-                            imdbId = movieDetail.imdbId,
-                            originalTitle = movieDetail.originalTitle,
-                            popularity = movieDetail.popularity,
-                            status = movieDetail.status,
-                            video = movieDetail.video,
-                            voteCount = movieDetail.voteCount,
-                            productionCountriesName = movieDetail.productionCountries.joinToString(", ") { it.name },
+                    if (movieDetailState.data != null) {
+                        val fullDetail: MovieFullDetails = mapToMovieFullDetails(
+                            movieDetail = movieDetailState.data,
+                            castList = castViewState.data?.cast ?: emptyList(),
+                            nowPlayingMovies = nowPlayingMovies.data?.results ?: emptyList(),
+                            upcomingMovies = upcomingMoviesState.data?.results ?: emptyList(),
+                            similarMovies = similarMovies.data?.results ?: emptyList()
                         )
-
                         ViewState.success(fullDetail)
                     } else {
                         ViewState.error("Failed to fetch movie details")

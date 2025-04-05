@@ -2,6 +2,7 @@ package prasad.vennam.android.presentation.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,9 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
+import prasad.vennam.android.domain.model.Genre
+import prasad.vennam.android.domain.model.MovieCast
 import prasad.vennam.android.domain.model.MovieFullDetails
+import prasad.vennam.android.domain.model.NowPlayingMovie
+import prasad.vennam.android.domain.model.UpcomingMovie
 import prasad.vennam.android.presentation.components.CastContent
 import prasad.vennam.android.presentation.components.GenreGridContent
 import prasad.vennam.android.presentation.components.NowPlayingMoviesContent
@@ -202,6 +208,84 @@ fun MovieDetailContent(
                 tint = Color.White
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MovieDetailContentPreview() {
+    Box(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        MovieDetailContent(
+            modifier = Modifier.padding(PaddingValues(16.dp)),
+            movieDetail = MovieFullDetails(
+                id = 111222,
+                title = "Times of Telangana",
+                voteAverage = 9.9,
+                originalLanguage = "Telugu",
+                backdropPath = "",
+                overview = "lorem",
+                genres = listOf(
+                    Genre(0, "Thriller"),
+                    Genre(1, "Horror"),
+                    Genre(2, "Romance")
+                ),
+                posterPath = "",
+                castList = listOf(
+                    MovieCast(
+                        id = 0,
+                        name = "Prasad",
+                        character = "Prasad",
+                        gender = 0,
+                    ),
+                    MovieCast(
+                        id = 0,
+                        name = "Vennam",
+                        character = "Vennam",
+                        gender = 0,
+                    ),
+                    MovieCast(
+                        id = 0,
+                        name = "Vennam",
+                        character = "Vennam",
+                        gender = 0,
+                    )
+                ),
+                nowPlayingMovies = listOf(
+                    NowPlayingMovie(
+                        id = 0,
+                        poster = ""
+                    ),
+                    NowPlayingMovie(
+                        id = 1,
+                        poster = ""
+                    ),
+                    NowPlayingMovie(
+                        id = 2,
+                        poster = ""
+                    )
+                ),
+                upComingMovies = listOf(
+                    UpcomingMovie(
+                        id = 0,
+                        poster = ""
+                    ),
+                    UpcomingMovie(
+                        id = 1,
+                        poster = ""
+                    ),
+                    UpcomingMovie(
+                        id = 2,
+                        poster = ""
+                    )
+                ),
+                similarMovies = emptyList(),
+                releaseDate = "2023-10-10",
+                runtime = 20000,
+                tagline = ""
+            ),
+            onBackClick = {},
+            onItemClick = {}
+        )
     }
 }
 
