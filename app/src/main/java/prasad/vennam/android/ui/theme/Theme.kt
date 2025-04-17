@@ -254,7 +254,7 @@ val unspecified_scheme = ColorFamily(
 
 @Composable
 fun AppTheme(
-    colorSchemeType: ColorSchemeType = ColorSchemeType.LIGHT,
+    colorSchemeType: ColorSchemeType = ColorSchemeType.DYNAMIC,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when (colorSchemeType) {

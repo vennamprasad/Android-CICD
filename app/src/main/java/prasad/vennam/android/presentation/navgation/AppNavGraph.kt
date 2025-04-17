@@ -1,18 +1,27 @@
 package prasad.vennam.android.presentation.navgation
 
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import prasad.vennam.android.presentation.screens.AppSplashScreen
 import prasad.vennam.android.presentation.screens.HomeScreen
 import prasad.vennam.android.presentation.screens.LoginScreen
+import prasad.vennam.android.presentation.screens.MovieDetailScreen
 import prasad.vennam.android.presentation.screens.OnboardingScreen
 import prasad.vennam.android.presentation.screens.SignUpScreen
 import prasad.vennam.android.presentation.viewmodel.HomeViewmodel
+import prasad.vennam.android.presentation.viewmodel.MovieDetailsViewmodel
 
 @Composable
 fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
@@ -21,14 +30,18 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
     ) {
         composable(Route.Splash.route) {
             AppSplashScreen(
-                delay = 5000L, onTimeout = {
+                delay = 1000L,
+                onTimeout = {
                     navController.navigate(Route.Onboarding.route) {
                         popUpTo(Route.Splash.route) { inclusive = true }
                     }
-                })
+                },
+                modifier = modifier
+            )
         }
         composable(Route.Onboarding.route) {
             OnboardingScreen(
+                modifier = modifier,
                 onClick = { route ->
                     when (route) {
                         Route.Login.route -> {
@@ -91,10 +104,35 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
             )
         }
         composable(Route.Home.route) {
-            // viewmodel
             val viewModel: HomeViewmodel = hiltViewModel()
             HomeScreen(
-                viewModel
+                modifier,
+                viewModel,
+                onMovieClick = { movieId ->
+                    navController.navigate(Route.MovieDetails.route + "/${movieId}") {
+                        popUpTo(Route.Home.route) { inclusive = false }
+                    }
+                },
+            )
+        }
+
+        composable(
+            route = "${Route.MovieDetails.route}/{movieId}",
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
+        ) {
+            val viewModel: MovieDetailsViewmodel = hiltViewModel()
+
+            MovieDetailScreen(
+                modifier,
+                viewModel = viewModel,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onItemClick = { movieId ->
+                    navController.navigate(Route.MovieDetails.route + "/${movieId}") {
+                        popUpTo(Route.MovieDetails.route) { inclusive = false }
+                    }
+                }
             )
         }
     }

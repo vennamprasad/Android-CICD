@@ -11,13 +11,13 @@ import kotlinx.coroutines.delay
 import prasad.vennam.android.R
 
 @Composable
-fun AppSplashScreen(delay: Long, onTimeout: () -> Unit) {
+fun AppSplashScreen(delay: Long, onTimeout: () -> Unit, modifier: Modifier) {
     LaunchedEffect(Unit) {
         delay(delay)
         onTimeout()
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Image(
