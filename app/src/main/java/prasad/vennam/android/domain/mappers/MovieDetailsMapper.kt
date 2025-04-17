@@ -5,7 +5,12 @@ import prasad.vennam.android.data.remote.datasources.response.MovieDetailRespons
 import prasad.vennam.android.data.remote.datasources.response.PlayingMovieResponse
 import prasad.vennam.android.data.remote.datasources.response.SingleCastResponse
 import prasad.vennam.android.data.remote.datasources.response.TrendingMovieResponse
-import prasad.vennam.android.domain.model.*
+import prasad.vennam.android.domain.model.Genre
+import prasad.vennam.android.domain.model.MovieCast
+import prasad.vennam.android.domain.model.MovieFullDetails
+import prasad.vennam.android.domain.model.NowPlayingMovie
+import prasad.vennam.android.domain.model.TrendingMovie
+import prasad.vennam.android.domain.model.UpcomingMovie
 
 fun mapToMovieFullDetails(
     movieDetail: MovieDetailResponse,
