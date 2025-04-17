@@ -1,12 +1,19 @@
 package prasad.vennam.android.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,53 +36,116 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.sdp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextField(
-            value = email,
-            onValueChange = {
-                email = it
-            },
-            label = { androidx.compose.material3.Text("Email") },
+    Box {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-        )
-        Spacer(
-            modifier = Modifier
-                .padding(8.sdp)
-        )
-        TextField(
-            value = password,
-            onValueChange = {
-                password = it
-            },
-            label = { androidx.compose.material3.Text("Password") },
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        Spacer(
-            modifier = Modifier
-                .padding(8.sdp)
-        )
-        androidx.compose.material3.ElevatedButton(
-            onClick = {
-                viewModel.apply {
-                    saveUserData(
-                        email = email,
-                        password = password
-                    )
-                }
-                onLoginSuccess()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
+                .padding(16.sdp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            androidx.compose.material3.Text("Login")
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                },
+                label = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(
+                modifier = Modifier
+                    .padding(8.sdp)
+            )
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                },
+                label = { Text("Password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            // Forgot Password Button
+            TextButton(
+                onClick = onForgotPasswordClick,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.End)
+            ) {
+                Text("Forgot Password?")
+            }
+
+            // Sign In Button
+            ElevatedButton(
+                onClick = {
+                    viewModel.apply {
+                        saveUserData(
+                            email = email,
+                            password = password
+                        )
+                    }
+                    onLoginSuccess()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .requiredHeight(
+                        42.sdp
+                    ),
+                shape = RoundedCornerShape(
+                    topStart = 8.sdp, topEnd = 8.sdp, bottomStart = 8.sdp, bottomEnd = 8.sdp
+                )
+            ) {
+                Text("Sign In")
+            }
+
+            // new user? Sign Up Button
+            TextButton(
+                onClick = onSignUpClick,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text("New User? Sign Up")
+            }
+
+            // Sign In with Google Button
+            ElevatedButton(
+                onClick = {
+                    // Handle Google Sign In
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .requiredHeight(
+                        42.sdp
+                    ),
+                shape = RoundedCornerShape(
+                    topStart = 8.sdp, topEnd = 8.sdp, bottomStart = 8.sdp, bottomEnd = 8.sdp
+                )
+            ) {
+                Text("Sign In with Google")
+            }
+            Spacer(
+                modifier = Modifier
+                    .padding(8.sdp)
+            )
+            // Sign In with Facebook Button
+            ElevatedButton(
+                onClick = {
+                    // Handle Facebook Sign In
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .requiredHeight(
+                        42.sdp
+                    ),
+                shape = RoundedCornerShape(
+                    topStart = 8.sdp, topEnd = 8.sdp, bottomStart = 8.sdp, bottomEnd = 8.sdp
+                )
+            ) {
+                Text("Sign In with Facebook")
+            }
         }
     }
 }

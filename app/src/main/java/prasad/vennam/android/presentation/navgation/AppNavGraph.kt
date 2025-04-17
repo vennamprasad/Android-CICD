@@ -1,11 +1,6 @@
 package prasad.vennam.android.presentation.navgation
 
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import prasad.vennam.android.presentation.screens.AppSplashScreen
+import prasad.vennam.android.presentation.screens.ForgotPasswordScreen
 import prasad.vennam.android.presentation.screens.HomeScreen
 import prasad.vennam.android.presentation.screens.LoginScreen
 import prasad.vennam.android.presentation.screens.MovieDetailScreen
@@ -74,9 +70,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
                 },
                 onForgotPasswordClick = {
                     navController.navigate(Route.ForgotPassword.route) {
-                        popUpTo<Route.Login> {
-                            inclusive = true
-                        }
+                        popUpTo(Route.Login.route) { inclusive = true }
                     }
                 },
                 onSignUpClick = {
@@ -100,6 +94,22 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
                 },
                 onExternalLink = {
 
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Route.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onResetPasswordClick = {
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.ForgotPassword.route) { inclusive = true }
+                    }
                 }
             )
         }
