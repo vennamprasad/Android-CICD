@@ -34,4 +34,8 @@ interface MovieService {
     @GET("movie/{movie_id}/similar?api_key=${BuildConfig.API_KEY}")
     suspend fun fetchSimilarMovies(@Path("movie_id") movieId: Int): TrendingMovieListResponse
 
+    // popular people
+    @GET("person/popular?api_key=${BuildConfig.API_KEY}")
+    suspend fun fetchPopularPeople(@Query("page") page: Int): CastsResponse
+
 }

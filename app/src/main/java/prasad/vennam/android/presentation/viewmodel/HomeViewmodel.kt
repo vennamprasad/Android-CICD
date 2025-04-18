@@ -2,9 +2,11 @@ package prasad.vennam.android.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -32,36 +34,27 @@ class HomeViewmodel @Inject constructor(
 
     private fun loadTrendingMovieList() {
         _trendingMovieListState.value = ListState.Loading
-
         viewModelScope.launch {
-            val pagerFlow = movieRemoteRepository.getPagerMovies()
+            val pagerFlow: Flow<PagingData<TrendingMovie>> = movieRemoteRepository.getPagerMovies()
                 .catch {
                     _trendingMovieListState.value = ListState.Error(it)
-
                 }
                 .map { pagingData ->
-
-                    pagingData.map { trendingMovieResponse ->
+                    pagingData.map { movie ->
                         TrendingMovie(
-                            id = trendingMovieResponse.id ?: 0,
-                            title = trendingMovieResponse.title.orEmpty(),
-                            voteAverage = trendingMovieResponse.voteAverage ?: 0.0,
-                            originalLanguage = trendingMovieResponse.originalLanguage.orEmpty(),
-                            posterPath = trendingMovieResponse.posterPath,
-                            backdropPath = trendingMovieResponse.backdropPath,
-                            overview = trendingMovieResponse.overview.orEmpty(),
+                            id = movie.id ?: 0,
+                            title = movie.title.orEmpty(),
+                            voteAverage = movie.voteAverage ?: 0.0,
+                            originalLanguage = movie.originalLanguage.orEmpty(),
+                            posterPath = movie.posterPath,
+                            backdropPath = movie.backdropPath,
+                            overview = movie.overview.orEmpty(),
                             isSaved = false
                         )
                     }
-
-
                 }
                 .cachedIn(viewModelScope)
-
-
             _trendingMovieListState.value = ListState.Success(pagerFlow)
-
         }
     }
-
 }
