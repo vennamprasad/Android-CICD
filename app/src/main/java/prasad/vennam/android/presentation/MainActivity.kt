@@ -25,8 +25,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     content = { padding ->
                         AppNavGraph(
+                            modifier = Modifier.padding(padding),
                             navController,
-                            modifier = Modifier.padding(padding)
                         )
                     }
                 )

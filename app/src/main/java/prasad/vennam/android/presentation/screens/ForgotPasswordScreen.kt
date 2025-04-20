@@ -28,11 +28,14 @@ import prasad.vennam.android.ui.theme.sdp
 
 @Composable
 fun ForgotPasswordScreen(
+    modifier: Modifier,
     onBackClick: () -> Unit,
     onResetPasswordClick: () -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
-    Box {
+    Box(
+        modifier = modifier
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,6 +92,7 @@ fun ForgotPasswordScreen(
 @Preview
 fun ForgotPasswordScreenPreview() {
     ForgotPasswordScreen(
+        modifier = Modifier,
         onBackClick = {},
         onResetPasswordClick = {}
     )

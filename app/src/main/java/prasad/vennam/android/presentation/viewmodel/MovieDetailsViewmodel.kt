@@ -4,11 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import prasad.vennam.android.data.local.datasources.model.MovieEntity
+import prasad.vennam.android.data.local.datasources.repository.MovieLocalRepository
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
 import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
@@ -23,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewmodel @Inject constructor(
     private val movieRemoteRepository: MovieRemoteRepository,
+    private val movieLocalRepository: MovieLocalRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -37,6 +43,25 @@ class MovieDetailsViewmodel @Inject constructor(
         }
     }
 
+    private fun getMovie(id: Int) {
+        viewModelScope.launch {
+            val movieEntity = movieLocalRepository.getMovie(id)
+            if (movieEntity != null) {
+                _movieFullDetailState.update { state ->
+                    state.copy(
+                        data = state.data?.copy(isSaved = true)
+                    )
+                }
+            } else {
+                _movieFullDetailState.update { state ->
+                    state.copy(
+                        data = state.data?.copy(isSaved = false)
+                    )
+                }
+            }
+        }
+    }
+
     private fun getMovieDetailsBy(id: Int) {
         viewModelScope.launch {
             try {
@@ -44,27 +69,18 @@ class MovieDetailsViewmodel @Inject constructor(
                     movieRemoteRepository.fetchTrendingMovieDetailData(id)
                 val movieCastFlow: Flow<ViewState<CastsResponse>> =
                     movieRemoteRepository.fetchMovieCast(id)
-                val upcomingMoviesFlow: Flow<ViewState<UpcomingMovieListResponse>> =
-                    movieRemoteRepository.fetchUpcomingMovies()
-                val nowPlayingMoviesFlow: Flow<ViewState<NowPlayingMovieListResponse>> =
-                    movieRemoteRepository.fetchNowPlayingMovies()
                 val similarMoviesFlow: Flow<ViewState<TrendingMovieListResponse>> =
                     movieRemoteRepository.fetchSimilarMovies(id)
 
                 combine(
                     movieDetailFlow,
                     movieCastFlow,
-                    upcomingMoviesFlow,
-                    nowPlayingMoviesFlow,
-                    similarMoviesFlow
-                ) { movieDetailState, castViewState, upcomingMoviesState, nowPlayingMovies, similarMovies ->
-
+                    similarMoviesFlow,
+                ) { movieDetailState, castViewState, similarMovies ->
                     if (movieDetailState.data != null) {
                         val fullDetail: MovieFullDetails = mapToMovieFullDetails(
                             movieDetail = movieDetailState.data,
                             castList = castViewState.data?.cast ?: emptyList(),
-                            nowPlayingMovies = nowPlayingMovies.data?.results ?: emptyList(),
-                            upcomingMovies = upcomingMoviesState.data?.results ?: emptyList(),
                             similarMovies = similarMovies.data?.results ?: emptyList()
                         )
                         ViewState.success(fullDetail)
@@ -73,6 +89,7 @@ class MovieDetailsViewmodel @Inject constructor(
                     }
                 }.collect { state ->
                     _movieFullDetailState.value = state
+                    getMovie(id)
                 }
 
             } catch (e: Exception) {
@@ -80,4 +97,30 @@ class MovieDetailsViewmodel @Inject constructor(
             }
         }
     }
+
+    fun toggleMovieSavedStatus(movieId: Int) {
+        viewModelScope.launch {
+            if (_movieFullDetailState.value.data?.isSaved == true) {
+                movieLocalRepository.deleteMovie(movieId)
+            } else {
+                val movieEntity = _movieFullDetailState.value.data?.toMovieEntity()
+                if (movieEntity != null) {
+                    movieLocalRepository.saveMovie(movieEntity)
+                }
+            }
+            getMovie(movieId)
+        }
+    }
+}
+
+private fun MovieFullDetails.toMovieEntity(): MovieEntity {
+    return MovieEntity(
+        id = id,
+        title = title,
+        voteAverage = voteAverage,
+        originalLanguage = originalLanguage,
+        posterPath = posterPath,
+        backdropPath = backdropPath,
+        overview = overview,
+    )
 }

@@ -1,9 +1,5 @@
 package prasad.vennam.android.domain.model
 
-import prasad.vennam.android.data.remote.datasources.response.ProductionCompany
-import prasad.vennam.android.data.remote.datasources.response.ProductionCountry
-import prasad.vennam.android.data.remote.datasources.response.SpokenLanguage
-
 data class MovieFullDetails(
     val id: Int,
     val title: String,
@@ -14,8 +10,6 @@ data class MovieFullDetails(
     val genres: List<Genre>,
     val posterPath: String,
     val castList: List<MovieCast>,
-    val nowPlayingMovies: List<NowPlayingMovie>,
-    val upComingMovies: List<UpcomingMovie>,
     val similarMovies: List<TrendingMovie>,
     val releaseDate: String,
     val runtime: Int,
@@ -37,4 +31,5 @@ data class MovieFullDetails(
     val voteCount: Int = 0,
     val belongsToCollection: String? = null,
     val productionCountriesName: String? = null,
+    val isSaved: Boolean = false,
 )

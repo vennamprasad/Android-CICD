@@ -13,8 +13,10 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import prasad.vennam.android.BuildConfig
+import prasad.vennam.android.data.local.datasources.dao.MovieDao
 import prasad.vennam.android.data.local.datasources.database.MoviesDatabase
 import prasad.vennam.android.data.local.datasources.model.MovieEntity
+import prasad.vennam.android.data.local.datasources.repository.MovieLocalRepository
 import prasad.vennam.android.data.remote.datasources.MovieService
 import prasad.vennam.android.utils.NetworkConnectionInterceptor
 import retrofit2.Retrofit
@@ -88,9 +90,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDao(db: MoviesDatabase) = db.noteDoa()
+    fun provideDao(db: MoviesDatabase) = db.favoriteMovies()
 
     @Provides
     fun provideEntity() = MovieEntity()
+
+    @Singleton
+    @Provides
+    fun provideMovieLocalRepository(movieDao: MovieDao): MovieLocalRepository =
+        MovieLocalRepository(movieDao)
 
 }

@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class UpcomingMovie(
+data class CommonMovie(
     val id: Int,
     val poster: String,
 ) : Parcelable

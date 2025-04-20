@@ -28,6 +28,7 @@ import prasad.vennam.android.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
+    modifier: Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
     onForgotPasswordClick: () -> Unit,
@@ -38,7 +39,7 @@ fun LoginScreen(
 
     Box {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(16.sdp),
             verticalArrangement = Arrangement.Center,
@@ -157,6 +158,7 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(
+        modifier = Modifier,
         onLoginSuccess = {},
         onForgotPasswordClick = {},
         onSignUpClick = {}

@@ -6,7 +6,6 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +34,6 @@ object NetworkUtils {
     private val _networkType = MutableStateFlow("Unknown")
     val networkType: StateFlow<String> get() = _networkType
 
-    @RequiresApi(Build.VERSION_CODES.S)
     fun registerNetworkCallback(context: Context) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val request = NetworkRequest.Builder().build()
@@ -66,8 +64,6 @@ object NetworkUtils {
             }
         }
         cm.registerNetworkCallback(request, callback)
-
-
     }
 
 

@@ -6,7 +6,10 @@ import javax.inject.Inject
 
 class MovieLocalRepository @Inject constructor(private val dao: MovieDao) {
     fun saveMovie(movie: MovieEntity) = dao.insert(movie)
-    fun deleteMovie(movie: MovieEntity) = dao.delete(movie)
+    fun deleteMovie(id: Int) = dao.deleteMovieById(id)
     fun getMovie(id: Int): MovieEntity? = dao.getMovieById(id)
     fun getAllSavedMovies() = dao.getAllSavedMovies()
+    suspend fun exist(mediaId: Int): Int {
+        return dao.exists(mediaId)
+    }
 }
