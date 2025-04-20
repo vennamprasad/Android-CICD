@@ -20,4 +20,15 @@ sealed class Route(val route: String) {
     data object Search : Route("search")
     data class ExternalWebViewWithUrl(val url: URL) : Route("webViewWithUrl")
     data object MovieDetails : Route("movie_details")
+    data object TVShowDetails : Route("tv_show_details")
+
+    data object MovieCrewDetails : Route("movie_crew_details")
+    data object TVShowCrewDetails : Route("tv_show_crew_details")
+
+    data object MovieReviews : Route("movie_reviews")
+    data object TVShowReviews : Route("tv_show_reviews")
+
+    data object Watchlist : Route("watchlist")
+    data object GenreWiseMovie : Route("genre_wise_movie")
+    data object SeeAll : Route("see_all")
 }

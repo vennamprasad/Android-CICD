@@ -2,21 +2,16 @@ package prasad.vennam.android.domain.mappers
 
 
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
-import prasad.vennam.android.data.remote.datasources.response.PlayingMovieResponse
 import prasad.vennam.android.data.remote.datasources.response.SingleCastResponse
 import prasad.vennam.android.data.remote.datasources.response.TrendingMovieResponse
 import prasad.vennam.android.domain.model.Genre
 import prasad.vennam.android.domain.model.MovieCast
 import prasad.vennam.android.domain.model.MovieFullDetails
-import prasad.vennam.android.domain.model.NowPlayingMovie
 import prasad.vennam.android.domain.model.TrendingMovie
-import prasad.vennam.android.domain.model.UpcomingMovie
 
 fun mapToMovieFullDetails(
     movieDetail: MovieDetailResponse,
     castList: List<SingleCastResponse>,
-    nowPlayingMovies: List<PlayingMovieResponse>,
-    upcomingMovies: List<PlayingMovieResponse>,
     similarMovies: List<TrendingMovieResponse>
 ): MovieFullDetails {
     return MovieFullDetails(
@@ -39,16 +34,6 @@ fun mapToMovieFullDetails(
                 gender = it.gender ?: 0,
                 profilePath = it.profilePath.orEmpty(),
                 character = it.character.orEmpty()
-            )
-        },
-        nowPlayingMovies = nowPlayingMovies.map {
-            NowPlayingMovie(
-                id = it.id ?: 0, poster = it.posterPath ?: ""
-            )
-        },
-        upComingMovies = upcomingMovies.map {
-            UpcomingMovie(
-                id = it.id ?: 0, poster = it.posterPath ?: ""
             )
         },
         similarMovies = similarMovies.map {

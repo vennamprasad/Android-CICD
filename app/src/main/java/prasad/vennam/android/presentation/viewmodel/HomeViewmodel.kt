@@ -13,8 +13,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
+import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
+import prasad.vennam.android.domain.model.CommonMovie
 import prasad.vennam.android.domain.model.TrendingMovie
 import prasad.vennam.android.utils.ListState
+import prasad.vennam.android.utils.Status
+import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,8 +33,81 @@ class HomeViewmodel @Inject constructor(
 
     val trendingMovieListState: StateFlow<ListState> = _trendingMovieListState
 
+    private val _upcomingMovieListState =
+        MutableStateFlow<ViewState<List<CommonMovie>>>(ViewState.loading())
+    val upcomingMovieListState: StateFlow<ViewState<List<CommonMovie>>> = _upcomingMovieListState
+
+    private val _nowPlayingMovieListState =
+        MutableStateFlow<ViewState<List<CommonMovie>>>(ViewState.loading())
+    val nowPlayingMovieListState: StateFlow<ViewState<List<CommonMovie>>> =
+        _nowPlayingMovieListState
+
+
     init {
         loadTrendingMovieList()
+        loadUpcomingMovieList()
+        loadNowPlayingMovieList()
+    }
+
+    private fun loadNowPlayingMovieList() {
+        val nowPlayingMoviesFlow: Flow<ViewState<NowPlayingMovieListResponse>> =
+            movieRemoteRepository.fetchNowPlayingMovies()
+        viewModelScope.launch {
+            nowPlayingMoviesFlow.catch {
+                _nowPlayingMovieListState.value = ViewState.error(it.message.orEmpty())
+            }.collect { response ->
+                when (response.status) {
+                    Status.SUCCESS -> {
+                        _nowPlayingMovieListState.value =
+                            ViewState.success(response.data?.results?.map { movie ->
+                                CommonMovie(
+                                    id = movie.id ?: 0, poster = movie.posterPath.orEmpty()
+                                )
+                            } ?: emptyList())
+                    }
+
+                    Status.ERROR -> {
+                        _nowPlayingMovieListState.value =
+                            ViewState.error(response.message.orEmpty())
+                    }
+
+                    Status.LOADING -> {
+                        _nowPlayingMovieListState.value = ViewState.loading()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadUpcomingMovieList() {
+        val upcomingMoviesFlow: Flow<ViewState<UpcomingMovieListResponse>> =
+            movieRemoteRepository.fetchUpcomingMovies()
+
+        viewModelScope.launch {
+            upcomingMoviesFlow.catch {
+                _upcomingMovieListState.value = ViewState.error(it.message.orEmpty())
+            }.collect { response ->
+                when (response.status) {
+                    Status.SUCCESS -> {
+                        _upcomingMovieListState.value =
+                            ViewState.success(response.data?.results?.map { movie ->
+                                CommonMovie(
+                                    id = movie.id ?: 0,
+                                    poster = movie.posterPath.orEmpty(),
+                                )
+                            } ?: emptyList())
+                    }
+
+                    Status.ERROR -> {
+                        _upcomingMovieListState.value = ViewState.error(response.message.orEmpty())
+                    }
+
+                    Status.LOADING -> {
+                        _upcomingMovieListState.value = ViewState.loading()
+                    }
+                }
+            }
+        }
     }
 
     private fun loadTrendingMovieList() {
