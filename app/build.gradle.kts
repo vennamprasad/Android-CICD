@@ -112,6 +112,13 @@ android {
         excludes += "/META-INF/AL2.0"
         excludes += "/META-INF/LGPL2.1"
     }
+    sourceSets {
+        getByName("main") {
+            assets {
+                srcDirs("src/main/assets")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -183,6 +190,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.sdp.android)
     implementation(libs.ssp.android)
+    implementation(libs.lottie.compose)
     // test
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)

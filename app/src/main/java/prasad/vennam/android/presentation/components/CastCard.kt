@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import prasad.vennam.android.domain.model.MovieCast
 import prasad.vennam.android.ui.theme.AppTypography
-import prasad.vennam.android.utils.PROFILE_WIDTH
+import prasad.vennam.android.utils.POSTER_WIDTH_VERTICAL
 import prasad.vennam.android.utils.getBackgroundImageUrl
 
 @Composable
@@ -45,7 +45,7 @@ fun CastCard(movieCast: MovieCast) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             SubcomposeAsyncImage(
-                model = getBackgroundImageUrl(movieCast.profilePath, size = PROFILE_WIDTH),
+                model = getBackgroundImageUrl(movieCast.profilePath, size = POSTER_WIDTH_VERTICAL),
                 contentDescription = "Profile Image",
                 loading = {
                     Box(

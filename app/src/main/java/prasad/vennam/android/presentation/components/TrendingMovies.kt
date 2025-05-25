@@ -2,10 +2,12 @@ package prasad.vennam.android.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -42,7 +44,7 @@ fun TrendingMovies(
             .background(MaterialTheme.colorScheme.primary)
     )
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .wrapContentHeight()
@@ -51,12 +53,13 @@ fun TrendingMovies(
             val item = lazyPagingItems[index]
             if (item != null) {
                 CommonPosterCard(
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(280.dp),
                     id = item.id,
                     poster = getBackgroundImageUrl(item.posterPath),
-                    onItemClick = onMovieClick
+                    onItemClick = onMovieClick,
+                    modifier = Modifier.size(200.dp, 300.dp),
+                    onItemClickWatchList = {
+
+                    }
                 )
             }
         }
