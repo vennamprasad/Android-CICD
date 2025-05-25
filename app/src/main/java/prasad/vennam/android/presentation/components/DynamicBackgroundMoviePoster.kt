@@ -3,6 +3,7 @@ package prasad.vennam.android.presentation.components
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,8 @@ import androidx.palette.graphics.Palette
 import coil.Coil
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import prasad.vennam.android.utils.POSTER_WIDTH_HORIZONTAL
+import prasad.vennam.android.ui.theme.sdp
+import prasad.vennam.android.utils.POSTER_WIDTH
 import prasad.vennam.android.utils.getBackgroundImageUrl
 
 @Composable
@@ -33,7 +35,7 @@ fun DynamicBackgroundMoviePoster(
     posterPath: String,
     onMovieClick: (movieId: Int) -> Unit,
 ) {
-    val imageUrl = getBackgroundImageUrl(posterPath, POSTER_WIDTH_HORIZONTAL)
+    val imageUrl = getBackgroundImageUrl(posterPath, POSTER_WIDTH)
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
     val dynamicBackgroundColor = remember { mutableStateOf(Color.Gray) }
     val dynamicTextColor = remember { mutableStateOf(Color.White) }

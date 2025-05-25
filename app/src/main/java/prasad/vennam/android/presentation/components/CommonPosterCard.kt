@@ -2,12 +2,16 @@ package prasad.vennam.android.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
@@ -15,18 +19,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import prasad.vennam.android.utils.POSTER_WIDTH_VERTICAL
+import prasad.vennam.android.utils.PROFILE_WIDTH
 import prasad.vennam.android.utils.getBackgroundImageUrl
-
 
 @Composable
 fun CommonPosterCard(
@@ -34,78 +35,49 @@ fun CommonPosterCard(
     poster: String,
     onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onItemClickWatchList: () -> Unit,
 ) {
     Card(
         modifier = modifier
+            .padding(PaddingValues(bottom = 32.dp))
+            .wrapContentHeight()
             .clickable { onItemClick(id) },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .aspectRatio(2f / 3f)
+                .fillMaxWidth()
+                .wrapContentSize(align = Alignment.Center, unbounded = false)
         ) {
-            // Poster Image
             SubcomposeAsyncImage(
-                model = getBackgroundImageUrl(poster, size = POSTER_WIDTH_VERTICAL),
+                model = getBackgroundImageUrl(poster, size = PROFILE_WIDTH),
                 contentDescription = "Poster Image",
-                contentScale = ContentScale.FillBounds,
                 loading = {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
                             strokeWidth = 2.dp,
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 error = {
                     Icon(
                         imageVector = Icons.Filled.BrokenImage,
-                        contentDescription = "Image Load Failed",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentDescription = "Image Not Available",
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(24.dp)
                     )
                 },
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(16.dp))
-            )
-
-            Icon(
-                imageVector = Icons.Filled.BrokenImage,
-                contentDescription = "Add to Watchlist",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(8.dp)
-                    .align(Alignment.TopEnd)
-                    .clickable {
-                        onItemClickWatchList()
-                    }
+                    .clip(RoundedCornerShape(12.dp))
             )
         }
     }
 }
-
-
-@Composable
-@Preview(showBackground = true)
-fun CommonPosterCardPreview() {
-    CommonPosterCard(
-        id = 1,
-        poster = "https://example.com/poster.jpg",
-        onItemClick = {},
-        onItemClickWatchList = {},
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(16.dp)
-    )
-}
-

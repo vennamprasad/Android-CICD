@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -64,7 +63,7 @@ fun UpComingMoviesList(
             .background(MaterialTheme.colorScheme.primary)
     )
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .wrapContentHeight()
@@ -72,13 +71,12 @@ fun UpComingMoviesList(
         items(upComingMovies.size) { index ->
             val item = upComingMovies[index]
             CommonPosterCard(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(280.dp),
                 id = item.id,
                 poster = getBackgroundImageUrl(item.poster),
-                onItemClick = onItemClick,
-                modifier = Modifier.size(200.dp, 300.dp),
-                onItemClickWatchList = {
-
-                }
+                onItemClick = onItemClick
             )
         }
     }

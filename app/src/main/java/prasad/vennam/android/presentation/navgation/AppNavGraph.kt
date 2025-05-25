@@ -1,15 +1,17 @@
 package prasad.vennam.android.presentation.navgation
 
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.glance.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import prasad.vennam.android.presentation.components.NetworkAwareScreen
+import prasad.vennam.android.presentation.components.NoInternetScreen
 import prasad.vennam.android.presentation.screens.AppSplashScreen
 import prasad.vennam.android.presentation.screens.ForgotPasswordScreen
 import prasad.vennam.android.presentation.screens.GenreWiseMoviesScreen
@@ -22,6 +24,7 @@ import prasad.vennam.android.presentation.screens.WatchlistScreen
 import prasad.vennam.android.presentation.viewmodel.HomeViewmodel
 import prasad.vennam.android.presentation.viewmodel.MovieDetailsViewmodel
 import prasad.vennam.android.presentation.viewmodel.WatchListViewModel
+import prasad.vennam.android.utils.NetworkUtils
 
 @Composable
 fun AppNavGraph(
@@ -124,7 +127,7 @@ fun AppNavGraph(
             )
         }
         composable(Route.Home.route) {
-            NetworkAwareScreen {
+            if (NetworkUtils.isNetworkAvailable(androidx.compose.ui.platform.LocalContext.current)) {
                 val viewModel: HomeViewmodel = hiltViewModel()
                 HomeScreen(
                     viewModel,
@@ -139,6 +142,8 @@ fun AppNavGraph(
                         }
                     },
                 )
+            } else {
+                NoInternetScreen()
             }
         }
 
@@ -146,7 +151,7 @@ fun AppNavGraph(
             route = "${Route.MovieDetails.route}/{movieId}",
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
         ) {
-            NetworkAwareScreen {
+            if (NetworkUtils.isNetworkAvailable(androidx.compose.ui.platform.LocalContext.current)) {
                 val viewModel: MovieDetailsViewmodel = hiltViewModel()
                 MovieDetailScreen(
                     modifier,
@@ -160,6 +165,8 @@ fun AppNavGraph(
                         }
                     }
                 )
+            } else {
+                NoInternetScreen()
             }
         }
 

@@ -1,6 +1,8 @@
 package prasad.vennam.android.data.remote.datasources.response
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class TvShow(
     @SerializedName("adult")

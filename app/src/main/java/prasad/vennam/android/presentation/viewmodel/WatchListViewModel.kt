@@ -45,18 +45,6 @@ class WatchListViewModel @Inject constructor(private val myListMovieRepository: 
         }
     }
 
-    fun addOrRemoveFromWatchList(movie: MovieEntity) {
-        viewModelScope.launch {
-            if (myListMovieRepository.exist(mediaId = movie.id) > 0) {
-                myListMovieRepository.deleteMovie(id = movie.id)
-            } else {
-                myListMovieRepository.saveMovie(movie)
-            }
-        }.invokeOnCompletion {
-            exist(movie.id)
-        }
-    }
-
     fun removeFromWatchList(mediaId: Int) {
         viewModelScope.launch {
             myListMovieRepository.deleteMovie(id = mediaId)

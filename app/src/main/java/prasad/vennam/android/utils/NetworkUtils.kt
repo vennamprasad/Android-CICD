@@ -31,8 +31,8 @@ object NetworkUtils {
             connectivityManager.activeNetworkInfo?.isConnected ?: false
         }
     }
-    private val _networkType = MutableStateFlow(NetworkType.UNKNOWN)
-    val networkType: StateFlow<NetworkType> get() = _networkType
+    private val _networkType = MutableStateFlow("Unknown")
+    val networkType: StateFlow<String> get() = _networkType
 
     fun registerNetworkCallback(context: Context) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -52,16 +52,14 @@ object NetworkUtils {
 
             override fun onAvailable(network: Network) {
                 CoroutineScope(Dispatchers.Default).launch {
-                    _networkType.value = getNetworkType(
-                        cm.getNetworkCapabilities(network) ?: return@launch
-                    )
+                    _networkType.value = "Connection is ON"
                 }
 
             }
 
             override fun onLost(network: Network) {
                 CoroutineScope(Dispatchers.Default).launch {
-                    _networkType.value = NetworkType.UNKNOWN
+                    _networkType.value = "No Connection"
                 }
             }
         }
@@ -69,19 +67,12 @@ object NetworkUtils {
     }
 
 
-    private fun getNetworkType(networkCapabilities: NetworkCapabilities): NetworkType {
+    private fun getNetworkType(networkCapabilities: NetworkCapabilities): String {
         return when {
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> NetworkType.WIFI
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NetworkType.CELLULAR
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> NetworkType.ETHERNET
-            else -> NetworkType.UNKNOWN
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WiFi"
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Cellular"
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
+            else -> "Unknown"
         }
     }
-}
-
-enum class NetworkType {
-    WIFI,
-    CELLULAR,
-    ETHERNET,
-    UNKNOWN
 }

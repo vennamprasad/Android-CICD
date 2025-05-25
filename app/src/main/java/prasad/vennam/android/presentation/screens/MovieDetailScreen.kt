@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import prasad.vennam.android.domain.model.Genre
 import prasad.vennam.android.domain.model.MovieCast
 import prasad.vennam.android.domain.model.MovieFullDetails
-import prasad.vennam.android.domain.model.TrendingMovie
 import prasad.vennam.android.presentation.components.CastContent
 import prasad.vennam.android.presentation.components.GenreGridContent
 import prasad.vennam.android.presentation.components.MoviePoster
@@ -56,8 +55,6 @@ fun MovieDetailScreen(
     viewModel: MovieDetailsViewmodel,
     onBackClick: () -> Unit,
     onItemClick: (Int) -> Unit,
-    onGenreItemClick: (Int) -> Unit = { /* Default no-op */ },
-    onCastItemClick: (Int) -> Unit = { /* Default no-op */ }
 ) {
     val movieFullDetailState by viewModel.movieFullDetailState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -144,10 +141,7 @@ fun MovieDetailScreen(
                     ) {
                         item {
                             MovieDetailContent(
-                                movieDetails = movieDetails,
-                                onItemClick = onItemClick,
-                                onCastItemClick = onCastItemClick,
-                                onGenreItemClick = onGenreItemClick
+                                movieDetails = movieDetails, onItemClick = onItemClick
                             )
                         }
                     }
@@ -174,8 +168,6 @@ fun MovieDetailScreen(
 fun MovieDetailContent(
     movieDetails: MovieFullDetails,
     onItemClick: (Int) -> Unit,
-    onCastItemClick: (Int) -> Unit,
-    onGenreItemClick: (Int) -> Unit,
 ) {
     Column {
         MoviePoster(
@@ -189,7 +181,7 @@ fun MovieDetailContent(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
+        // Displaying additional information
         Text(
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -201,12 +193,10 @@ fun MovieDetailContent(
         )
         Spacer(modifier = Modifier.height(8.dp))
         GenreGridContent(
-            genres = movieDetails.genres,
-            onGenreItemClick
+            genres = movieDetails.genres
         )
         CastContent(
-            listOfCasts = movieDetails.castList,
-            onCastItemClick = onCastItemClick
+            listOfCasts = movieDetails.castList
         )
         SimilarMoviesContent(
             similarMovies = movieDetails.similarMovies, onItemClick
@@ -234,7 +224,8 @@ fun MovieDetailContentPreview() {
                     Genre(0, "Thriller"),
                     Genre(1, "Horror"),
                     Genre(2, "Romance")
-                ), posterPath = "www.example.com/poster.jpg",
+                ),
+                posterPath = "",
                 castList = listOf(
                     MovieCast(
                         id = 0,
@@ -254,23 +245,13 @@ fun MovieDetailContentPreview() {
                         character = "Vennam",
                         gender = 0,
                     )
-                ), similarMovies = listOf(
-                    TrendingMovie(
-                        id = 1,
-                        posterPath = "https://image.tmdb.org/t/p/w500/abc123.jpg",
-                        title = "Movie 1",
-                        overview = "Overview of Movie 1",
-                        voteAverage = 8.5,
-                        backdropPath = "https://image.tmdb.org/t/p/w500/def456.jpg",
-                        originalLanguage = "en",
-                        isSaved = false,
-                    ),
                 ),
+                similarMovies = emptyList(),
                 releaseDate = "2023-10-10",
                 runtime = 20000,
                 tagline = ""
             ),
-            onItemClick = {}, onCastItemClick = {}, onGenreItemClick = {}
+            onItemClick = {},
         )
     }
 }
