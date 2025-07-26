@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import prasad.vennam.android.ui.theme.sdp
-import prasad.vennam.android.viewmodel.LoginViewModel
+import prasad.vennam.android.presentation.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(

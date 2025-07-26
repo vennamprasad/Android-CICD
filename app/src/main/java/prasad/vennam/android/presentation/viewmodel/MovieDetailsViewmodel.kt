@@ -4,11 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,9 +15,7 @@ import prasad.vennam.android.data.local.datasources.repository.MovieLocalReposit
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
 import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
-import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.TrendingMovieListResponse
-import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
 import prasad.vennam.android.domain.mappers.mapToMovieFullDetails
 import prasad.vennam.android.domain.model.MovieFullDetails
 import prasad.vennam.android.utils.ViewState

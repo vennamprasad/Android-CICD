@@ -1,4 +1,4 @@
-package prasad.vennam.android.viewmodel
+package prasad.vennam.android.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

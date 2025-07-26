@@ -1,7 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.gradle.api.initialization.resolve.RepositoriesMode.*
-
-include(":sdp")
-
 
 pluginManagement {
     repositories {

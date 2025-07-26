@@ -90,6 +90,15 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    fun fetchGenreWiseMovies(genreId: String): Flow<ViewState<TrendingMovieListResponse>> {
+        return flow {
+
+            val trendingMovieListResponse = movieService.getMoviesByGenre(genreId = genreId)
+
+            emit(ViewState.success(trendingMovieListResponse))
+        }.flowOn(Dispatchers.IO)
+    }
+
 
     companion object {
         const val NETWORK_PAGE_SIZE = 20

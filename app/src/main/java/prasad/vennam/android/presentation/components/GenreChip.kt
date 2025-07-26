@@ -2,6 +2,7 @@ package prasad.vennam.android.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -16,10 +17,13 @@ import prasad.vennam.android.domain.model.Genre
 import prasad.vennam.android.ui.theme.AppTypography
 
 @Composable
-fun GenreChip(genre: Genre) {
+fun GenreChip(genre: Genre, onGenreItemClick: (Genre) -> Unit) {
     Card(
         modifier = Modifier
             .padding(4.dp)
+            .clickable {
+                onGenreItemClick(genre)
+            }
             .background(MaterialTheme.colorScheme.background),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -36,5 +40,5 @@ fun GenreChip(genre: Genre) {
 @Composable
 @Preview
 fun GenreChipPreview() {
-    GenreChip(Genre(id = 1, name = "Action"))
+    GenreChip(Genre(id = 1, name = "Action"), onGenreItemClick = {})
 }

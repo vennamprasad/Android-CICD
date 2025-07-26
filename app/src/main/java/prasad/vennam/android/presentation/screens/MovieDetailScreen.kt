@@ -56,8 +56,8 @@ fun MovieDetailScreen(
     viewModel: MovieDetailsViewmodel,
     onBackClick: () -> Unit,
     onItemClick: (Int) -> Unit,
-    onGenreItemClick: (Int) -> Unit = { /* Default no-op */ },
-    onCastItemClick: (Int) -> Unit = { /* Default no-op */ }
+    onGenreItemClick: (Genre) -> Unit,
+    onCastItemClick: (Int) -> Unit,
 ) {
     val movieFullDetailState by viewModel.movieFullDetailState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -175,7 +175,7 @@ fun MovieDetailContent(
     movieDetails: MovieFullDetails,
     onItemClick: (Int) -> Unit,
     onCastItemClick: (Int) -> Unit,
-    onGenreItemClick: (Int) -> Unit,
+    onGenreItemClick: (Genre) -> Unit,
 ) {
     Column {
         MoviePoster(
@@ -269,8 +269,7 @@ fun MovieDetailContentPreview() {
                 releaseDate = "2023-10-10",
                 runtime = 20000,
                 tagline = ""
-            ),
-            onItemClick = {}, onCastItemClick = {}, onGenreItemClick = {}
+            ), onItemClick = {}, onCastItemClick = {}, onGenreItemClick = {}
         )
     }
 }

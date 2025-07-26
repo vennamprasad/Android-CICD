@@ -38,4 +38,12 @@ interface MovieService {
     @GET("person/popular?api_key=${BuildConfig.API_KEY}")
     suspend fun fetchPopularPeople(@Query("page") page: Int): CastsResponse
 
+    // genre wise movies
+    @GET("discover/movie?api_key=${BuildConfig.API_KEY}")
+    suspend fun getMoviesByGenre(
+        @Query("with_genres") genreId: String,
+        @Query("page") page: Int = 1,
+    ): TrendingMovieListResponse
+
+
 }

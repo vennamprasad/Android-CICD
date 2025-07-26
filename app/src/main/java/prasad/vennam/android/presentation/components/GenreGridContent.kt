@@ -20,7 +20,7 @@ import prasad.vennam.android.domain.model.Genre
 import prasad.vennam.android.ui.theme.AppTypography
 
 @Composable
-fun GenreGridContent(genres: List<Genre>, onGenreItemClick: (Int) -> Unit) {
+fun GenreGridContent(genres: List<Genre>, onGenreItemClick: (Genre) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,7 +41,7 @@ fun GenreGridContent(genres: List<Genre>, onGenreItemClick: (Int) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(genres) { genre ->
-                GenreChip(genre)
+                GenreChip(genre, onGenreItemClick)
             }
         }
     }

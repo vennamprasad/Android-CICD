@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import prasad.vennam.android.R
+import prasad.vennam.android.utils.BACKDROP_WIDTH
 import prasad.vennam.android.utils.getBackgroundImageUrl
 
 @Composable
@@ -25,7 +26,7 @@ fun MoviePoster(
 ) {
     Box(modifier = modifier) {
         SubcomposeAsyncImage(
-            model = getBackgroundImageUrl(posterPath),
+            model = getBackgroundImageUrl(posterPath, BACKDROP_WIDTH),
             contentDescription = null,
             loading = {
                 Box(
