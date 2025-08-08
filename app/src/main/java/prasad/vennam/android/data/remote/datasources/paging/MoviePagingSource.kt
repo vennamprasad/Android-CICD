@@ -8,8 +8,6 @@ import prasad.vennam.android.data.remote.datasources.response.TrendingMovieRespo
 class MoviePagingSource(private val apiService: MovieService) :
     PagingSource<Int, TrendingMovieResponse>() {
 
-
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TrendingMovieResponse> {
 
         return try {

@@ -12,7 +12,6 @@ plugins {
     alias(libs.plugins.ksp)
 
     alias(libs.plugins.detekt)
-    alias(libs.plugins.gradle.versions)
 }
 
 detekt {
@@ -158,9 +157,6 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.glance)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.livedata.ktx)
