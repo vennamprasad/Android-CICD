@@ -10,10 +10,8 @@ import kotlinx.coroutines.flow.flowOn
 import prasad.vennam.android.data.remote.datasources.paging.MoviePagingSource
 import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
-import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
-import prasad.vennam.android.data.remote.datasources.response.TrendingMovieListResponse
-import prasad.vennam.android.data.remote.datasources.response.TrendingMovieResponse
-import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieResponse
 import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
 
@@ -21,7 +19,7 @@ class MovieRemoteRepository @Inject constructor(
     private val movieService: MovieService,
 ) {
 
-    fun fetchTrendingMovieListData(): Flow<ViewState<TrendingMovieListResponse>> {
+    fun fetchTrendingMovieListData(): Flow<ViewState<MovieListResponse>> {
         return flow {
 
             val trendingMovieListResponse = movieService.fetchAllTrendingMovies(1)
@@ -30,7 +28,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun getPagerMovies(): Flow<PagingData<TrendingMovieResponse>> {
+    fun getPagerMovies(): Flow<PagingData<MovieResponse>> {
 
         return Pager(
             config = PagingConfig(
@@ -55,7 +53,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun fetchUpcomingMovies(): Flow<ViewState<UpcomingMovieListResponse>> {
+    fun fetchUpcomingMovies(): Flow<ViewState<MovieListResponse>> {
         return flow {
             val upcomingMoviesResponse = movieService.fetchUpcomingMovies()
 
@@ -63,7 +61,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun fetchNowPlayingMovies(): Flow<ViewState<NowPlayingMovieListResponse>> {
+    fun fetchNowPlayingMovies(): Flow<ViewState<MovieListResponse>> {
         return flow {
             val nowPlayingMovieListResponse = movieService.fetchNowPlayingMovies()
 
@@ -71,7 +69,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun searchMovie(queryText: String): Flow<ViewState<TrendingMovieListResponse>> {
+    fun searchMovie(queryText: String): Flow<ViewState<MovieListResponse>> {
 
         return flow {
             val searchedTrendingMovieResponse = movieService.searchMovie(queryText = queryText)
@@ -80,7 +78,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun fetchSimilarMovies(id: Int): Flow<ViewState<TrendingMovieListResponse>> {
+    fun fetchSimilarMovies(id: Int): Flow<ViewState<MovieListResponse>> {
         return flow {
             val similarMovieResponse = movieService.fetchSimilarMovies(movieId = id)
 
@@ -88,7 +86,7 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun fetchGenreWiseMovies(genreId: String): Flow<ViewState<TrendingMovieListResponse>> {
+    fun fetchGenreWiseMovies(genreId: String): Flow<ViewState<MovieListResponse>> {
         return flow {
 
             val trendingMovieListResponse = movieService.getMoviesByGenre(genreId = genreId)

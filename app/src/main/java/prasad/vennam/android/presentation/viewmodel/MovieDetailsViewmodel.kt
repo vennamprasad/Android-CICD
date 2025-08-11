@@ -15,7 +15,7 @@ import prasad.vennam.android.data.local.datasources.repository.MovieLocalReposit
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
 import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
-import prasad.vennam.android.data.remote.datasources.response.TrendingMovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieListResponse
 import prasad.vennam.android.domain.mappers.mapToMovieFullDetails
 import prasad.vennam.android.domain.model.MovieFullDetails
 import prasad.vennam.android.utils.ViewState
@@ -65,7 +65,7 @@ class MovieDetailsViewmodel @Inject constructor(
                     movieRemoteRepository.fetchTrendingMovieDetailData(id)
                 val movieCastFlow: Flow<ViewState<CastsResponse>> =
                     movieRemoteRepository.fetchMovieCast(id)
-                val similarMoviesFlow: Flow<ViewState<TrendingMovieListResponse>> =
+                val similarMoviesFlow: Flow<ViewState<MovieListResponse>> =
                     movieRemoteRepository.fetchSimilarMovies(id)
 
                 combine(

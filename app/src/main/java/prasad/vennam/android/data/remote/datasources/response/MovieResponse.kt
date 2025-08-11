@@ -2,7 +2,7 @@ package prasad.vennam.android.data.remote.datasources.response
 
 import com.google.gson.annotations.SerializedName
 
-data class TrendingMovieResponse(
+data class MovieResponse(
 
     @SerializedName("id")
     val id: Int? = null,

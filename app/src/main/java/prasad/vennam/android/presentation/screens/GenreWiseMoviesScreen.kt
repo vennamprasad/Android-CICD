@@ -14,7 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import prasad.vennam.android.data.remote.datasources.response.TrendingMovieResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieResponse
 
 @Composable
 fun GenreWiseMoviesScreen(
@@ -22,7 +22,7 @@ fun GenreWiseMoviesScreen(
     genreName: String,
     onMovieClick: (movieId: Int) -> Unit,
     onBackClick: () -> Boolean,
-    movies: List<TrendingMovieResponse>
+    movies: List<MovieResponse>
 ) {
     Scaffold(
         modifier = Modifier,

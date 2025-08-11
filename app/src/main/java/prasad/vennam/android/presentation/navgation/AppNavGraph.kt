@@ -25,7 +25,7 @@ import prasad.vennam.android.presentation.screens.OnboardingScreen
 import prasad.vennam.android.presentation.screens.SignUpScreen
 import prasad.vennam.android.presentation.screens.WatchlistScreen
 import prasad.vennam.android.presentation.viewmodel.GenreWiseMoviesViewModel
-import prasad.vennam.android.presentation.viewmodel.HomeViewmodel
+import prasad.vennam.android.presentation.viewmodel.HomeViewModel
 import prasad.vennam.android.presentation.viewmodel.MovieDetailsViewmodel
 import prasad.vennam.android.presentation.viewmodel.WatchListViewModel
 import prasad.vennam.android.utils.Status
@@ -128,7 +128,7 @@ fun AppNavGraph(
         }
         composable(Route.Home.route) {
             NetworkAwareScreen {
-                val viewModel: HomeViewmodel = hiltViewModel()
+                val viewModel: HomeViewModel = hiltViewModel()
                 HomeScreen(
                     viewModel,
                     onMovieClick = { movieId ->

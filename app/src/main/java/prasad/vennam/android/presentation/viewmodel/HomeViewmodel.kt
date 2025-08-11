@@ -8,173 +8,185 @@ import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import prasad.vennam.android.data.local.datasources.model.MovieEntity
 import prasad.vennam.android.data.local.datasources.repository.MovieLocalRepository
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
-import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
-import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieListResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieResponse
 import prasad.vennam.android.domain.model.CommonMovie
 import prasad.vennam.android.domain.model.TrendingMovie
-import prasad.vennam.android.utils.ListState
 import prasad.vennam.android.utils.Status
 import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewmodel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val movieRemoteRepository: MovieRemoteRepository,
-    private val myListMovieRepository: MovieLocalRepository
+    private val movieLocalRepository: MovieLocalRepository
 ) : ViewModel() {
+
+    private val savedMoviesFlow =
+        movieLocalRepository.getAllSavedMovies().map { entities -> entities.map { it.id }.toSet() }
+            .shareIn(
+                scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), replay = 1
+            )
 
 
     private val _trendingMovieListState =
-        MutableStateFlow<ListState>(ListState.Loading)
-
-    val trendingMovieListState: StateFlow<ListState> = _trendingMovieListState
-
+        MutableStateFlow<ViewState<Flow<PagingData<TrendingMovie>>>>(ViewState.loading())
     private val _upcomingMovieListState =
         MutableStateFlow<ViewState<List<CommonMovie>>>(ViewState.loading())
-    val upcomingMovieListState: StateFlow<ViewState<List<CommonMovie>>> = _upcomingMovieListState
 
     private val _nowPlayingMovieListState =
         MutableStateFlow<ViewState<List<CommonMovie>>>(ViewState.loading())
-    val nowPlayingMovieListState: StateFlow<ViewState<List<CommonMovie>>> =
-        _nowPlayingMovieListState
 
+    data class HomeUiState(
+        val trendingMovies: ViewState<Flow<PagingData<TrendingMovie>>> = ViewState.loading(),
+        val upcomingMovies: ViewState<List<CommonMovie>> = ViewState.loading(),
+        val nowPlayingMovies: ViewState<List<CommonMovie>> = ViewState.loading(),
+    )
+
+    val uiState: StateFlow<HomeUiState> = combine(
+        _trendingMovieListState.asStateFlow(),
+        _upcomingMovieListState.asStateFlow(),
+        _nowPlayingMovieListState.asStateFlow()
+    ) { trending, upcoming, nowPlaying ->
+        HomeUiState(
+            trendingMovies = trending,
+            upcomingMovies = upcoming,
+            nowPlayingMovies = nowPlaying
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeUiState()
+    )
 
     init {
-        loadTrendingMovieList()
+        loadAllMovieData()
+    }
+
+    private fun loadAllMovieData() {
+        loadTrendingMoviesList()
         loadUpcomingMovieList()
         loadNowPlayingMovieList()
     }
 
-    private fun loadNowPlayingMovieList() {
-        val nowPlayingMoviesFlow: Flow<ViewState<NowPlayingMovieListResponse>> =
-            movieRemoteRepository.fetchNowPlayingMovies()
-
-        viewModelScope.launch {
-            combine(
-                nowPlayingMoviesFlow,
-                getSavedMovies()
-            ) { apiResponse, savedMovies ->
-                when (apiResponse.status) {
-                    Status.SUCCESS -> {
-                        val savedIds = savedMovies.map { it.id }.toSet()
-                        ViewState.success(
-                            apiResponse.data?.results?.map { movie ->
-                                CommonMovie(
-                                    id = movie.id ?: 0,
-                                    poster = movie.posterPath.orEmpty(),
-                                    isBookmarked = savedIds.contains(movie.id)
-                                )
-                            } ?: emptyList()
-                        )
-                    }
-
-                    Status.ERROR -> ViewState.error(apiResponse.message.orEmpty())
-                    Status.LOADING -> ViewState.loading()
-                }
-            }.catch {
-                _nowPlayingMovieListState.value = ViewState.error(it.message.orEmpty())
-            }.collect {
-                _nowPlayingMovieListState.value = it
+    private fun loadTrendingMoviesList() {
+        val trendingMoviesPagingFlow: Flow<PagingData<TrendingMovie>> = combine(
+            movieRemoteRepository.getPagerMovies(), savedMoviesFlow
+        ) { pagingData, savedMovieIds ->
+            pagingData.map { movie ->
+                movie.toTrendingMovie(savedMovieIds.contains(movie.id))
             }
+        }.cachedIn(viewModelScope)
+        viewModelScope.launch {
+            movieRemoteRepository.fetchTrendingMovieListData()
+                .catch { exception ->
+                    _trendingMovieListState.value = ViewState.error(exception.message.orEmpty())
+                }
+                .collect { response ->
+                    _trendingMovieListState.value = when (response.status) {
+                        Status.SUCCESS -> ViewState.success(trendingMoviesPagingFlow)
+                        Status.ERROR -> ViewState.error(response.message.orEmpty())
+                        Status.LOADING -> ViewState.loading()
+                    }
+                }
         }
     }
 
     private fun loadUpcomingMovieList() {
-        val upcomingMoviesFlow: Flow<ViewState<UpcomingMovieListResponse>> =
-            movieRemoteRepository.fetchUpcomingMovies()
-
         viewModelScope.launch {
             combine(
-                upcomingMoviesFlow,
-                getSavedMovies()
-            ) { apiResponse, savedMovies ->
-                when (apiResponse.status) {
-                    Status.SUCCESS -> {
-                        val savedIds = savedMovies.map { it.id }.toSet()
-                        ViewState.success(
-                            apiResponse.data?.results?.map { movie ->
-                                CommonMovie(
-                                    id = movie.id ?: 0,
-                                    poster = movie.posterPath.orEmpty(),
-                                    isBookmarked = savedIds.contains(movie.id)
-                                )
-                            } ?: emptyList()
-                        )
-                    }
-
-                    Status.ERROR -> ViewState.error(apiResponse.message.orEmpty())
-                    Status.LOADING -> ViewState.loading()
-                }
-            }.catch {
-                _upcomingMovieListState.value = ViewState.error(it.message.orEmpty())
-            }.collect {
-                _upcomingMovieListState.value = it
+                movieRemoteRepository.fetchUpcomingMovies(), savedMoviesFlow
+            ) { apiResponse, savedMovieIds ->
+                mapMovieResponse(apiResponse, savedMovieIds)
+            }.catch { exception ->
+                emit(ViewState.error(exception.message.orEmpty()))
+            }.collect { viewState ->
+                _upcomingMovieListState.value = viewState
             }
         }
     }
 
-    private fun loadTrendingMovieList() {
-        _trendingMovieListState.value = ListState.Loading
+    private fun loadNowPlayingMovieList() {
         viewModelScope.launch {
-            val pagerFlow: Flow<PagingData<TrendingMovie>> =
-                combine(
-                    movieRemoteRepository.getPagerMovies(),
-                    getSavedMovies()
-                ) { pagingData, savedMovies ->
-                    val savedIds = savedMovies.map { it.id }.toSet()
-                    pagingData.map { movie ->
-                        TrendingMovie(
-                            id = movie.id ?: 0,
-                            title = movie.title.orEmpty(),
-                            voteAverage = movie.voteAverage ?: 0.0,
-                            originalLanguage = movie.originalLanguage.orEmpty(),
-                            posterPath = movie.posterPath,
-                            backdropPath = movie.backdropPath,
-                            overview = movie.overview.orEmpty(),
-                            isSaved = savedIds.contains(movie.id)
-                        )
-                    }
-                }
-                    .catch { _trendingMovieListState.value = ListState.Error(it) }
-                    .cachedIn(viewModelScope)
-
-            _trendingMovieListState.value = ListState.Success(pagerFlow)
-        }
-    }
-
-    fun getSavedMovies(): Flow<List<CommonMovie>> {
-        return myListMovieRepository.getAllSavedMovies().map { movieEntities ->
-            movieEntities.map { movieEntity ->
-                CommonMovie(
-                    id = movieEntity.id,
-                    poster = movieEntity.posterPath
-                )
+            combine(
+                movieRemoteRepository.fetchNowPlayingMovies(), savedMoviesFlow
+            ) { apiResponse, savedMovieIds ->
+                mapMovieResponse(apiResponse, savedMovieIds)
+            }.catch { exception ->
+                emit(ViewState.error(exception.message.orEmpty()))
+            }.collect { viewState ->
+                _nowPlayingMovieListState.value = viewState
             }
         }
     }
 
-    fun addToWatchList(mediaId: Int) {
-        _nowPlayingMovieListState.value.data?.let { movies ->
-            val movie = movies.find { it.id == mediaId }
-            if (movie != null) {
-                viewModelScope.launch {
-                    myListMovieRepository.saveMovie(
-                        MovieEntity(
-                            id = movie.id,
-                            posterPath = movie.poster
-                        )
-                    )
-                }
+    private fun mapMovieResponse(
+        apiResponse: ViewState<MovieListResponse>, savedMovieIds: Set<Int>
+    ): ViewState<List<CommonMovie>> {
+        return when (apiResponse.status) {
+            Status.SUCCESS -> {
+                val movies = apiResponse.data?.results?.map { movie ->
+                    movie.toCommonMovie(savedMovieIds.contains(movie.id))
+                } ?: emptyList()
+                ViewState.success(movies)
             }
+
+            Status.ERROR -> ViewState.error(apiResponse.message.orEmpty())
+            Status.LOADING -> ViewState.loading()
         }
     }
 
+    fun refreshAllData() {
+        loadUpcomingMovieList()
+        loadNowPlayingMovieList()
+    }
+
+    fun refreshUpcomingMovies() {
+        loadUpcomingMovieList()
+    }
+
+    fun refreshNowPlayingMovies() {
+        loadNowPlayingMovieList()
+    }
+
+    fun refreshTrendingMovies() {
+        loadTrendingMoviesList()
+    }
+}
+
+private fun MovieResponse.toTrendingMovie(isSaved: Boolean): TrendingMovie {
+    return TrendingMovie(
+        id = id ?: 0,
+        title = title.orEmpty(),
+        voteAverage = voteAverage ?: 0.0,
+        originalLanguage = originalLanguage.orEmpty(),
+        posterPath = posterPath.orEmpty(),
+        backdropPath = backdropPath.orEmpty(),
+        overview = overview.orEmpty(),
+        isSaved = isSaved
+    )
+}
+
+private fun MovieResponse.toCommonMovie(isBookmarked: Boolean = false): CommonMovie {
+    return CommonMovie(
+        id = id ?: 0, poster = posterPath.orEmpty(), isBookmarked = isBookmarked
+    )
+}
+
+private fun MovieEntity.toCommonMovie(): CommonMovie {
+    return CommonMovie(
+        id = this.id, poster = this.posterPath, isBookmarked = true
+    )
 }
