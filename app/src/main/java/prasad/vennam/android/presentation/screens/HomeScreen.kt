@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Note
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -72,7 +72,7 @@ fun HomeScreen(
                         actions = {
                             IconButton(onClick = { onWatchlistClick() }) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Note,
+                                    imageVector = Icons.Filled.Favorite,
                                     contentDescription = "Watchlist",
                                 )
                             }
@@ -121,8 +121,11 @@ fun HomeScreen(
                             Status.SUCCESS -> {
                                 val nowPlayingMovieListState = nowPlayingMovieViewState.value.data
                                 NowPlayingMovies(
-                                    upComingMovies = nowPlayingMovieListState!!,
-                                    onItemClick = onMovieClick
+                                    upComingMovies = nowPlayingMovieListState ?: emptyList(),
+                                    onItemClick = onMovieClick,
+                                    onBookMarkClick = { movieId ->
+
+                                    }
                                 )
                             }
 

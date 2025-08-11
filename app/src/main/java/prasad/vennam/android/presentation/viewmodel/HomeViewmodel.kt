@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import prasad.vennam.android.data.local.datasources.model.MovieEntity
+import prasad.vennam.android.data.local.datasources.repository.MovieLocalRepository
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
 import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
@@ -25,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewmodel @Inject constructor(
     private val movieRemoteRepository: MovieRemoteRepository,
+    private val myListMovieRepository: MovieLocalRepository
 ) : ViewModel() {
 
 
@@ -52,29 +56,33 @@ class HomeViewmodel @Inject constructor(
     private fun loadNowPlayingMovieList() {
         val nowPlayingMoviesFlow: Flow<ViewState<NowPlayingMovieListResponse>> =
             movieRemoteRepository.fetchNowPlayingMovies()
+
         viewModelScope.launch {
-            nowPlayingMoviesFlow.catch {
-                _nowPlayingMovieListState.value = ViewState.error(it.message.orEmpty())
-            }.collect { response ->
-                when (response.status) {
+            combine(
+                nowPlayingMoviesFlow,
+                getSavedMovies()
+            ) { apiResponse, savedMovies ->
+                when (apiResponse.status) {
                     Status.SUCCESS -> {
-                        _nowPlayingMovieListState.value =
-                            ViewState.success(response.data?.results?.map { movie ->
+                        val savedIds = savedMovies.map { it.id }.toSet()
+                        ViewState.success(
+                            apiResponse.data?.results?.map { movie ->
                                 CommonMovie(
-                                    id = movie.id ?: 0, poster = movie.posterPath.orEmpty()
+                                    id = movie.id ?: 0,
+                                    poster = movie.posterPath.orEmpty(),
+                                    isBookmarked = savedIds.contains(movie.id)
                                 )
-                            } ?: emptyList())
+                            } ?: emptyList()
+                        )
                     }
 
-                    Status.ERROR -> {
-                        _nowPlayingMovieListState.value =
-                            ViewState.error(response.message.orEmpty())
-                    }
-
-                    Status.LOADING -> {
-                        _nowPlayingMovieListState.value = ViewState.loading()
-                    }
+                    Status.ERROR -> ViewState.error(apiResponse.message.orEmpty())
+                    Status.LOADING -> ViewState.loading()
                 }
+            }.catch {
+                _nowPlayingMovieListState.value = ViewState.error(it.message.orEmpty())
+            }.collect {
+                _nowPlayingMovieListState.value = it
             }
         }
     }
@@ -84,28 +92,31 @@ class HomeViewmodel @Inject constructor(
             movieRemoteRepository.fetchUpcomingMovies()
 
         viewModelScope.launch {
-            upcomingMoviesFlow.catch {
-                _upcomingMovieListState.value = ViewState.error(it.message.orEmpty())
-            }.collect { response ->
-                when (response.status) {
+            combine(
+                upcomingMoviesFlow,
+                getSavedMovies()
+            ) { apiResponse, savedMovies ->
+                when (apiResponse.status) {
                     Status.SUCCESS -> {
-                        _upcomingMovieListState.value =
-                            ViewState.success(response.data?.results?.map { movie ->
+                        val savedIds = savedMovies.map { it.id }.toSet()
+                        ViewState.success(
+                            apiResponse.data?.results?.map { movie ->
                                 CommonMovie(
                                     id = movie.id ?: 0,
                                     poster = movie.posterPath.orEmpty(),
+                                    isBookmarked = savedIds.contains(movie.id)
                                 )
-                            } ?: emptyList())
+                            } ?: emptyList()
+                        )
                     }
 
-                    Status.ERROR -> {
-                        _upcomingMovieListState.value = ViewState.error(response.message.orEmpty())
-                    }
-
-                    Status.LOADING -> {
-                        _upcomingMovieListState.value = ViewState.loading()
-                    }
+                    Status.ERROR -> ViewState.error(apiResponse.message.orEmpty())
+                    Status.LOADING -> ViewState.loading()
                 }
+            }.catch {
+                _upcomingMovieListState.value = ViewState.error(it.message.orEmpty())
+            }.collect {
+                _upcomingMovieListState.value = it
             }
         }
     }
@@ -113,11 +124,12 @@ class HomeViewmodel @Inject constructor(
     private fun loadTrendingMovieList() {
         _trendingMovieListState.value = ListState.Loading
         viewModelScope.launch {
-            val pagerFlow: Flow<PagingData<TrendingMovie>> = movieRemoteRepository.getPagerMovies()
-                .catch {
-                    _trendingMovieListState.value = ListState.Error(it)
-                }
-                .map { pagingData ->
+            val pagerFlow: Flow<PagingData<TrendingMovie>> =
+                combine(
+                    movieRemoteRepository.getPagerMovies(),
+                    getSavedMovies()
+                ) { pagingData, savedMovies ->
+                    val savedIds = savedMovies.map { it.id }.toSet()
                     pagingData.map { movie ->
                         TrendingMovie(
                             id = movie.id ?: 0,
@@ -127,12 +139,42 @@ class HomeViewmodel @Inject constructor(
                             posterPath = movie.posterPath,
                             backdropPath = movie.backdropPath,
                             overview = movie.overview.orEmpty(),
-                            isSaved = false
+                            isSaved = savedIds.contains(movie.id)
                         )
                     }
                 }
-                .cachedIn(viewModelScope)
+                    .catch { _trendingMovieListState.value = ListState.Error(it) }
+                    .cachedIn(viewModelScope)
+
             _trendingMovieListState.value = ListState.Success(pagerFlow)
         }
     }
+
+    fun getSavedMovies(): Flow<List<CommonMovie>> {
+        return myListMovieRepository.getAllSavedMovies().map { movieEntities ->
+            movieEntities.map { movieEntity ->
+                CommonMovie(
+                    id = movieEntity.id,
+                    poster = movieEntity.posterPath
+                )
+            }
+        }
+    }
+
+    fun addToWatchList(mediaId: Int) {
+        _nowPlayingMovieListState.value.data?.let { movies ->
+            val movie = movies.find { it.id == mediaId }
+            if (movie != null) {
+                viewModelScope.launch {
+                    myListMovieRepository.saveMovie(
+                        MovieEntity(
+                            id = movie.id,
+                            posterPath = movie.poster
+                        )
+                    )
+                }
+            }
+        }
+    }
+
 }

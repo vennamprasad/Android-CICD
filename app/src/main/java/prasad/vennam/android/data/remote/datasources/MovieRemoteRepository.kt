@@ -3,21 +3,19 @@ package prasad.vennam.android.data.remote.datasources
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import prasad.vennam.android.data.local.datasources.repository.MovieLocalRepository
 import prasad.vennam.android.data.remote.datasources.paging.MoviePagingSource
+import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
+import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.TrendingMovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.TrendingMovieResponse
-import prasad.vennam.android.data.remote.datasources.response.CastsResponse
-import prasad.vennam.android.data.remote.datasources.response.NowPlayingMovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.UpcomingMovieListResponse
 import prasad.vennam.android.utils.ViewState
-import timber.log.Timber
+import javax.inject.Inject
 
 class MovieRemoteRepository @Inject constructor(
     private val movieService: MovieService,

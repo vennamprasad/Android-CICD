@@ -18,7 +18,6 @@ import prasad.vennam.android.data.remote.datasources.response.TrendingMovieRespo
 
 @Composable
 fun GenreWiseMoviesScreen(
-    modifier: Modifier,
     genreId: String,
     genreName: String,
     onMovieClick: (movieId: Int) -> Unit,
@@ -26,7 +25,7 @@ fun GenreWiseMoviesScreen(
     movies: List<TrendingMovieResponse>
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier,
         topBar = {
             GenreWiseMoviesTopBar(
                 onBackClick = onBackClick,

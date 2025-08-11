@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.automirrored.outlined.Note
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -125,8 +127,8 @@ fun MovieDetailScreen(
                                     viewModel.toggleMovieSavedStatus(movieDetails.id)
                                 }) {
                                     Icon(
-                                        imageVector = if (movieDetails.isSaved) Icons.AutoMirrored.Filled.Note
-                                        else Icons.AutoMirrored.Outlined.Note,
+                                        imageVector = if (movieDetails.isSaved) Icons.Filled.Favorite
+                                        else Icons.Filled.FavoriteBorder,
                                         contentDescription = null
                                     )
                                 }

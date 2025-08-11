@@ -9,6 +9,7 @@ class MovieLocalRepository @Inject constructor(private val dao: MovieDao) {
     fun deleteMovie(id: Int) = dao.deleteMovieById(id)
     fun getMovie(id: Int): MovieEntity? = dao.getMovieById(id)
     fun getAllSavedMovies() = dao.getAllSavedMovies()
+
     suspend fun exist(mediaId: Int): Int {
         return dao.exists(mediaId)
     }

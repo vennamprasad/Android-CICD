@@ -48,7 +48,8 @@ fun SimilarMoviesContent(
                     modifier = Modifier.size(200.dp, 300.dp),
                     onItemClickWatchList = {
 
-                    }
+                    },
+                    isBookmarked = item.isSaved
                 )
             }
         }

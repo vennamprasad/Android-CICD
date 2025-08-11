@@ -7,4 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class CommonMovie(
     val id: Int,
     val poster: String,
+    val isBookmarked: Boolean = false
 ) : Parcelable

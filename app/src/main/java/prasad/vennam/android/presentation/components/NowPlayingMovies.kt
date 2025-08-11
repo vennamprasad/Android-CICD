@@ -22,28 +22,37 @@ import prasad.vennam.android.utils.getBackgroundImageUrl
 fun NowPlayingMovies(
     upComingMovies: List<CommonMovie>,
     onItemClick: (Int) -> Unit,
+    onBookMarkClick: (Int) -> Unit
 ) {
     NowPlayingMoviesContent(
         upComingMovies = upComingMovies,
-        onItemClick = onItemClick
+        onItemClick = onItemClick,
+        onBookMarkClick = {
+            onBookMarkClick(it)
+        }
     )
 }
 
 @Composable
 fun NowPlayingMoviesContent(
     upComingMovies: List<CommonMovie>,
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
+    onBookMarkClick: (Int) -> Unit
 ) {
     NowPlayingMoviesList(
         upComingMovies = upComingMovies,
-        onItemClick = onItemClick
+        onItemClick = onItemClick,
+        onBookMarkClick = {
+            onBookMarkClick(it)
+        }
     )
 }
 
 @Composable
 fun NowPlayingMoviesList(
     upComingMovies: List<CommonMovie>,
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
+    onBookMarkClick: (Int) -> Unit
 ) {
     Text(
         text = "NowPlaying Movies",
@@ -75,8 +84,9 @@ fun NowPlayingMoviesList(
                 onItemClick = onItemClick,
                 modifier = Modifier.size(200.dp, 300.dp),
                 onItemClickWatchList = {
-
-                }
+                    onBookMarkClick(it)
+                },
+                isBookmarked = item.isBookmarked
             )
         }
     }

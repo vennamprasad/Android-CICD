@@ -32,7 +32,6 @@ import prasad.vennam.android.presentation.viewmodel.WatchListViewModel
 
 @Composable
 fun WatchlistScreen(
-    modifier: Modifier,
     viewModel: WatchListViewModel = hiltViewModel(),
     onItemClick: (String) -> Unit,
     onBackClick: () -> Unit = {},
@@ -40,7 +39,6 @@ fun WatchlistScreen(
     val watchlist = viewModel.myMovieData.value.collectAsStateWithLifecycle(emptyList()).value
 
     WatchlistContent(
-        modifier = modifier,
         movies = watchlist,
         onClick = onItemClick,
         onClickWatchList = { movie ->
@@ -53,14 +51,13 @@ fun WatchlistScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchlistContent(
-    modifier: Modifier,
     movies: List<MovieEntity>,
     onClick: (String) -> Unit,
     onClickWatchList: (MovieEntity) -> Unit,
     onBackClick: () -> Unit = {},
 ) {
     Scaffold(
-        modifier = modifier, topBar = {
+        topBar = {
             TopAppBar(
                 title = {
                     Column {
@@ -80,7 +77,8 @@ fun WatchlistContent(
                     }
                 },
             )
-        }) { innerPadding ->
+        }
+    ) { innerPadding ->
         if (movies.isNotEmpty()) {
             val gridState = rememberLazyGridState()
 
@@ -100,7 +98,8 @@ fun WatchlistContent(
                         poster = movie.posterPath,
                         onItemClick = { onClick(movie.id.toString()) },
                         onItemClickWatchList = { onClickWatchList(movie) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isBookmarked = true
                     )
                 }
             }

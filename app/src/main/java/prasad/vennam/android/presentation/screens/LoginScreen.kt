@@ -23,12 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import prasad.vennam.android.ui.theme.sdp
 import prasad.vennam.android.presentation.viewmodel.LoginViewModel
+import prasad.vennam.android.ui.theme.sdp
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
     onForgotPasswordClick: () -> Unit,
@@ -39,7 +38,7 @@ fun LoginScreen(
 
     Box {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(16.sdp),
             verticalArrangement = Arrangement.Center,
@@ -158,7 +157,6 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(
-        modifier = Modifier,
         onLoginSuccess = {},
         onForgotPasswordClick = {},
         onSignUpClick = {}

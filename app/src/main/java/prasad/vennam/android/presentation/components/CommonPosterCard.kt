@@ -1,19 +1,23 @@
 package prasad.vennam.android.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -34,7 +38,8 @@ fun CommonPosterCard(
     poster: String,
     onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onItemClickWatchList: () -> Unit,
+    onItemClickWatchList: (Int) -> Unit,
+    isBookmarked: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -77,19 +82,29 @@ fun CommonPosterCard(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(16.dp))
             )
-
-            Icon(
-                imageVector = Icons.Filled.BrokenImage,
-                contentDescription = "Add to Watchlist",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(8.dp)
-                    .align(Alignment.TopEnd)
-                    .clickable {
-                        onItemClickWatchList()
-                    }
-            )
+            Column(
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = if (isBookmarked) {
+                        Icons.Filled.Favorite
+                    } else {
+                        Icons.Filled.FavoriteBorder
+                    },
+                    contentDescription = "Add to Watchlist",
+                    modifier = Modifier
+                        .size(56.dp)
+                        .padding(8.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            shape = CircleShape
+                        )
+                        .clip(CircleShape)
+                        .clickable {
+                            onItemClickWatchList(id)
+                        }
+                        .padding(8.dp))
+            }
         }
     }
 }
@@ -106,7 +121,8 @@ fun CommonPosterCardPreview() {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(16.dp)
+            .padding(16.dp),
+        isBookmarked = true
     )
 }
 

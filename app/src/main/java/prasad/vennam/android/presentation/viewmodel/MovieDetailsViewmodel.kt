@@ -109,7 +109,7 @@ class MovieDetailsViewmodel @Inject constructor(
     }
 }
 
-private fun MovieFullDetails.toMovieEntity(): MovieEntity {
+fun MovieFullDetails.toMovieEntity(): MovieEntity {
     return MovieEntity(
         id = id,
         title = title,

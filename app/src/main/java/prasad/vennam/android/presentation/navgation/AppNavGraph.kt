@@ -2,7 +2,6 @@ package prasad.vennam.android.presentation.navgation
 
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +46,6 @@ fun AppNavGraph(
                         popUpTo(Route.Splash.route) { inclusive = true }
                     }
                 },
-                modifier = modifier
             )
         }
         composable(Route.Onboarding.route) {
@@ -78,7 +76,6 @@ fun AppNavGraph(
         }
         composable(Route.Login.route) {
             LoginScreen(
-                modifier,
                 onLoginSuccess = {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Onboarding.route) { inclusive = true }
@@ -98,7 +95,6 @@ fun AppNavGraph(
         }
         composable(Route.SignUp.route) {
             SignUpScreen(
-                modifier = modifier,
                 onSignUpSuccess = {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Onboarding.route) { inclusive = true }
@@ -120,7 +116,6 @@ fun AppNavGraph(
 
         composable(Route.ForgotPassword.route) {
             ForgotPasswordScreen(
-                modifier = modifier,
                 onBackClick = {
                     navController.popBackStack()
                 },
@@ -157,7 +152,6 @@ fun AppNavGraph(
             NetworkAwareScreen {
                 val viewModel: MovieDetailsViewmodel = hiltViewModel()
                 MovieDetailScreen(
-                    modifier,
                     viewModel = viewModel,
                     onBackClick = {
                         navController.popBackStack()
@@ -197,7 +191,6 @@ fun AppNavGraph(
                 when (trendingMovieListState.value.status) {
                     Status.SUCCESS -> {
                         GenreWiseMoviesScreen(
-                            modifier = modifier,
                             genreId = genreId,
                             genreName = genreName,
                             onMovieClick = { movieId ->
@@ -213,9 +206,7 @@ fun AppNavGraph(
                     }
 
                     Status.ERROR -> {
-                        Box(
-                            modifier = modifier.fillMaxSize(),
-                        ) {
+                        Box {
                             Text(
                                 modifier = Modifier.align(alignment = Alignment.Center),
                                 text = trendingMovieListState.value.message
@@ -226,9 +217,7 @@ fun AppNavGraph(
                     }
 
                     Status.LOADING -> {
-                        Box(
-                            modifier = modifier.fillMaxSize(),
-                        ) {
+                        Box {
                             Text(
                                 modifier = Modifier.align(alignment = Alignment.Center),
                                 text = trendingMovieListState.value.message
@@ -244,7 +233,6 @@ fun AppNavGraph(
         composable(Route.Watchlist.route) {
             val viewModel: WatchListViewModel = hiltViewModel()
             WatchlistScreen(
-                modifier,
                 viewModel,
                 onItemClick = { movieId ->
                     navController.navigate(Route.MovieDetails.route + "/${movieId}") {
