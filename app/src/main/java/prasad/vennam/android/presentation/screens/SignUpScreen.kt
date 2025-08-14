@@ -30,7 +30,6 @@ import prasad.vennam.android.ui.theme.sdp
 
 @Composable
 fun SignUpScreen(
-    modifier: Modifier,
     onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit,
     onExternalLink: () -> Unit,
@@ -38,9 +37,7 @@ fun SignUpScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    Box(
-        modifier = modifier
-    ) {
+    Box {
         // basic signup screen
         Column(
             modifier = Modifier
@@ -139,7 +136,6 @@ fun SignUpScreen(
 @Preview
 fun SignUpScreenPreview() {
     SignUpScreen(
-        modifier = Modifier,
         onSignUpSuccess = {},
         onLoginClick = {},
         onExternalLink = {},

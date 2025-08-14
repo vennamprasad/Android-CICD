@@ -2,9 +2,13 @@ package prasad.vennam.android.data.remote.datasources.response
 
 import com.google.gson.annotations.SerializedName
 
-data class Genre(
+data class ProductionCompany(
     @SerializedName("id")
     val id: Int,
+    @SerializedName("logo_path")
+    val logoPath: String?,
     @SerializedName("name")
-    val name: String
+    val name: String,
+    @SerializedName("origin_country")
+    val originCountry: String
 )

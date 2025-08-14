@@ -2,11 +2,11 @@ package prasad.vennam.android.data.remote.datasources.response
 
 import com.google.gson.annotations.SerializedName
 
-data class UpcomingMovieListResponse(
+data class MovieListResponse(
 
     @SerializedName("dates")
     val dates: DatesResponse? = null,
 
     @SerializedName("results")
-    val results: List<PlayingMovieResponse>? = null,
+    val results: List<MovieResponse>? = null,
 )

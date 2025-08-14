@@ -2,8 +2,8 @@ package prasad.vennam.android.domain.mappers
 
 
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieResponse
 import prasad.vennam.android.data.remote.datasources.response.SingleCastResponse
-import prasad.vennam.android.data.remote.datasources.response.TrendingMovieResponse
 import prasad.vennam.android.domain.model.Genre
 import prasad.vennam.android.domain.model.MovieCast
 import prasad.vennam.android.domain.model.MovieFullDetails
@@ -12,7 +12,7 @@ import prasad.vennam.android.domain.model.TrendingMovie
 fun mapToMovieFullDetails(
     movieDetail: MovieDetailResponse,
     castList: List<SingleCastResponse>,
-    similarMovies: List<TrendingMovieResponse>
+    similarMovies: List<MovieResponse>
 ): MovieFullDetails {
     return MovieFullDetails(
         id = movieDetail.id,

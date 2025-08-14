@@ -85,7 +85,7 @@ object AppModule {
         context, MoviesDatabase::class.java, "movies"
     )
         .allowMainThreadQueries()
-        .fallbackToDestructiveMigration()
+        .fallbackToDestructiveMigration(false)
         .build()
 
     @Provides

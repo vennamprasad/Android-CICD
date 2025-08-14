@@ -2,7 +2,6 @@ package prasad.vennam.android.presentation.navgation
 
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,19 +14,21 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import prasad.vennam.android.presentation.components.NetworkAwareScreen
 import prasad.vennam.android.presentation.screens.AppSplashScreen
 import prasad.vennam.android.presentation.screens.ForgotPasswordScreen
 import prasad.vennam.android.presentation.screens.GenreWiseMoviesScreen
 import prasad.vennam.android.presentation.screens.HomeScreen
 import prasad.vennam.android.presentation.screens.LoginScreen
 import prasad.vennam.android.presentation.screens.MovieDetailScreen
+import prasad.vennam.android.presentation.screens.MovieSearchScreen
+import prasad.vennam.android.presentation.screens.NetworkAwareScreen
 import prasad.vennam.android.presentation.screens.OnboardingScreen
 import prasad.vennam.android.presentation.screens.SignUpScreen
 import prasad.vennam.android.presentation.screens.WatchlistScreen
 import prasad.vennam.android.presentation.viewmodel.GenreWiseMoviesViewModel
-import prasad.vennam.android.presentation.viewmodel.HomeViewmodel
+import prasad.vennam.android.presentation.viewmodel.HomeViewModel
 import prasad.vennam.android.presentation.viewmodel.MovieDetailsViewmodel
+import prasad.vennam.android.presentation.viewmodel.MovieSearchViewModel
 import prasad.vennam.android.presentation.viewmodel.WatchListViewModel
 import prasad.vennam.android.utils.Status
 
@@ -47,7 +48,6 @@ fun AppNavGraph(
                         popUpTo(Route.Splash.route) { inclusive = true }
                     }
                 },
-                modifier = modifier
             )
         }
         composable(Route.Onboarding.route) {
@@ -78,7 +78,6 @@ fun AppNavGraph(
         }
         composable(Route.Login.route) {
             LoginScreen(
-                modifier,
                 onLoginSuccess = {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Onboarding.route) { inclusive = true }
@@ -98,7 +97,6 @@ fun AppNavGraph(
         }
         composable(Route.SignUp.route) {
             SignUpScreen(
-                modifier = modifier,
                 onSignUpSuccess = {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Onboarding.route) { inclusive = true }
@@ -113,16 +111,19 @@ fun AppNavGraph(
 
                 },
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigate(Route.Onboarding.route) {
+                        popUpTo(Route.SignUp.route) { inclusive = true }
+                    }
                 }
             )
         }
 
         composable(Route.ForgotPassword.route) {
             ForgotPasswordScreen(
-                modifier = modifier,
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.ForgotPassword.route) { inclusive = true }
+                    }
                 },
                 onResetPasswordClick = {
                     navController.navigate(Route.Login.route) {
@@ -133,7 +134,7 @@ fun AppNavGraph(
         }
         composable(Route.Home.route) {
             NetworkAwareScreen {
-                val viewModel: HomeViewmodel = hiltViewModel()
+                val viewModel: HomeViewModel = hiltViewModel()
                 HomeScreen(
                     viewModel,
                     onMovieClick = { movieId ->
@@ -146,6 +147,7 @@ fun AppNavGraph(
                             popUpTo(Route.Home.route) { inclusive = false }
                         }
                     },
+                    onSearchClick = { navController.navigate("search") }
                 )
             }
         }
@@ -157,7 +159,6 @@ fun AppNavGraph(
             NetworkAwareScreen {
                 val viewModel: MovieDetailsViewmodel = hiltViewModel()
                 MovieDetailScreen(
-                    modifier,
                     viewModel = viewModel,
                     onBackClick = {
                         navController.popBackStack()
@@ -197,7 +198,6 @@ fun AppNavGraph(
                 when (trendingMovieListState.value.status) {
                     Status.SUCCESS -> {
                         GenreWiseMoviesScreen(
-                            modifier = modifier,
                             genreId = genreId,
                             genreName = genreName,
                             onMovieClick = { movieId ->
@@ -213,9 +213,7 @@ fun AppNavGraph(
                     }
 
                     Status.ERROR -> {
-                        Box(
-                            modifier = modifier.fillMaxSize(),
-                        ) {
+                        Box {
                             Text(
                                 modifier = Modifier.align(alignment = Alignment.Center),
                                 text = trendingMovieListState.value.message
@@ -226,9 +224,7 @@ fun AppNavGraph(
                     }
 
                     Status.LOADING -> {
-                        Box(
-                            modifier = modifier.fillMaxSize(),
-                        ) {
+                        Box {
                             Text(
                                 modifier = Modifier.align(alignment = Alignment.Center),
                                 text = trendingMovieListState.value.message
@@ -244,7 +240,6 @@ fun AppNavGraph(
         composable(Route.Watchlist.route) {
             val viewModel: WatchListViewModel = hiltViewModel()
             WatchlistScreen(
-                modifier,
                 viewModel,
                 onItemClick = { movieId ->
                     navController.navigate(Route.MovieDetails.route + "/${movieId}") {
@@ -255,6 +250,23 @@ fun AppNavGraph(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(Route.Search.route) {
+            NetworkAwareScreen {
+                val searchViewModel: MovieSearchViewModel = hiltViewModel()
+                MovieSearchScreen(
+                    viewModel = searchViewModel,
+                    onMovieClick = { movieId ->
+                        navController.navigate(Route.MovieDetails.route + "/${movieId}") {
+                            popUpTo(Route.Search.route) { inclusive = false }
+                        }
+                    },
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
         }
     }
 }
