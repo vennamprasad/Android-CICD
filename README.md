@@ -23,7 +23,7 @@ A modern Android application built with Jetpack Compose, Kotlin, Hilt, and The M
 
 ### 1. Clone the Repository
 
-[git clone https://github.com/your-username/your-repo.git](https://github.com/vennamprasad/Android-CICD.git)
+https://github.com/vennamprasad/Android-CICD.git
 
 ### 2. Setup local.properties
 This file stores sensitive values like your TMDB API keys. It is excluded from Git tracking for security reasons.
