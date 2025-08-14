@@ -1,8 +1,10 @@
 package prasad.vennam.android.presentation.screens
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import prasad.vennam.android.domain.model.CommonMovie
 import prasad.vennam.android.domain.model.TrendingMovie
@@ -53,21 +57,19 @@ import prasad.vennam.android.utils.ViewState
 fun HomeScreen(
     viewModel: HomeViewModel,
     onMovieClick: (movieId: Int) -> Unit,
-    onWatchlistClick: () -> Unit, modifier: Modifier = Modifier
+    onWatchlistClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onSearchClick: () -> Unit,
 ) {
-    // Properly collect state using lifecycle-aware collector
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
 
-    // Simple refresh state without external dependencies
     var isRefreshing by remember { mutableStateOf(false) }
 
-    // Handle refresh completion
     LaunchedEffect(uiState) {
         if (isRefreshing) {
-            // Add small delay to show refresh animation
-            kotlinx.coroutines.delay(500)
+            delay(500) // Simulate network delay
             isRefreshing = false
         }
     }
@@ -80,60 +82,76 @@ fun HomeScreen(
                         isRefreshing = true
                         viewModel.refreshAllData()
                     }
-                }, isRefreshing = isRefreshing
-            )
-        }) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-        ) {
-            // Show refresh indicator at the top if refreshing
-            if (isRefreshing) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp), strokeWidth = 2.dp
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Trending Movies Section
-            TrendingMoviesSection(
-                uiState.trendingMovies,
-                onMovieClick = onMovieClick
-            ) {
-                viewModel.refreshTrendingMovies()
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Upcoming Movies Section
-            UpcomingMoviesSection(
-                upcomingState = uiState.upcomingMovies,
-                onMovieClick = onMovieClick,
-                onRetry = { viewModel.refreshUpcomingMovies() })
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Now Playing Movies Section
-            NowPlayingMoviesSection(
-                nowPlayingState = uiState.nowPlayingMovies,
-                onMovieClick = onMovieClick,
-                onBookmarkClick = { movieId ->
-
                 },
-                onRetry = { viewModel.refreshNowPlayingMovies() })
+                isRefreshing = isRefreshing,
+                onSearchClick = onSearchClick
+            )
 
-            Spacer(modifier = Modifier.height(16.dp))
+        }) { paddingValues ->
+        HomeContent(
+            paddingValues,
+            scrollState,
+            isRefreshing,
+            uiState,
+            onMovieClick,
+            viewModel
+        )
+    }
+}
+
+@Composable
+private fun HomeContent(
+    paddingValues: PaddingValues,
+    scrollState: ScrollState,
+    isRefreshing: Boolean,
+    uiState: HomeViewModel.HomeUiState,
+    onMovieClick: (Int) -> Unit,
+    viewModel: HomeViewModel,
+) {
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
+        if (isRefreshing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp), strokeWidth = 2.dp
+                )
+            }
         }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TrendingMoviesSection(
+            uiState.trendingMovies, onMovieClick = onMovieClick
+        ) {
+            viewModel.refreshTrendingMovies()
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        UpcomingMoviesSection(
+            upcomingState = uiState.upcomingMovies,
+            onMovieClick = onMovieClick,
+            onRetry = { viewModel.refreshUpcomingMovies() })
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        NowPlayingMoviesSection(
+            nowPlayingState = uiState.nowPlayingMovies,
+            onMovieClick = onMovieClick,
+            onBookmarkClick = { movieId ->
+
+            },
+            onRetry = { viewModel.refreshNowPlayingMovies() })
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -141,7 +159,10 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeTopAppBar(
-    onWatchlistClick: () -> Unit, onRefreshClick: () -> Unit, isRefreshing: Boolean = false
+    onWatchlistClick: () -> Unit,
+    onRefreshClick: () -> Unit,
+    isRefreshing: Boolean = false,
+    onSearchClick: () -> Unit
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -155,6 +176,11 @@ private fun HomeTopAppBar(
                 overflow = TextOverflow.Ellipsis
             )
         }, actions = {
+            IconButton(onClick = onSearchClick) {
+                Icon(
+                    imageVector = Icons.Default.Search, contentDescription = "Search"
+                )
+            }
             IconButton(
                 onClick = onRefreshClick, enabled = !isRefreshing
             ) {
@@ -185,12 +211,11 @@ private fun TrendingMoviesSection(
     onMovieClick: (Int) -> Unit,
     onRetry: () -> Unit
 ) {
-    SectionHeader(title = "Trending Movies")
-
     when (trendingMoviesPagingItems.status) {
         Status.SUCCESS -> {
             val lazyPagingItems = trendingMoviesPagingItems.data?.collectAsLazyPagingItems()
             lazyPagingItems?.let {
+                SectionHeader(title = "Trending Movies")
                 TrendingMovies(
                     lazyPagingItems = it,
                     onMovieClick = onMovieClick
@@ -224,14 +249,13 @@ private fun UpcomingMoviesSection(
     onMovieClick: (Int) -> Unit,
     onRetry: () -> Unit
 ) {
-    SectionHeader(title = "Upcoming Movies")
-
     when (upcomingState.status) {
         Status.SUCCESS -> {
             val movies = upcomingState.data ?: emptyList()
             if (movies.isEmpty()) {
                 EmptyState(message = "No upcoming movies available")
             } else {
+                SectionHeader(title = "Upcoming Movies")
                 UpComingMovies(
                     upComingMovies = movies, onItemClick = onMovieClick
                 )
@@ -265,14 +289,13 @@ private fun NowPlayingMoviesSection(
     onBookmarkClick: (Int) -> Unit,
     onRetry: () -> Unit
 ) {
-    SectionHeader(title = "Now Playing")
-
     when (nowPlayingState.status) {
         Status.SUCCESS -> {
             val movies = nowPlayingState.data ?: emptyList()
             if (movies.isEmpty()) {
                 EmptyState(message = "No movies currently playing")
             } else {
+                SectionHeader(title = "Now Playing")
                 NowPlayingMovies(
                     upComingMovies = movies,
                     onItemClick = onMovieClick,

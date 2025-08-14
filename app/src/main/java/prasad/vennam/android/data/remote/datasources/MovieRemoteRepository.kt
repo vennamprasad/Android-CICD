@@ -8,10 +8,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import prasad.vennam.android.data.remote.datasources.paging.MoviePagingSource
+import prasad.vennam.android.data.remote.datasources.paging.SearchMoviesPagingSource
 import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieResponse
+import prasad.vennam.android.data.remote.datasources.response.MovieSearchFilters
+import prasad.vennam.android.data.remote.datasources.response.MovieSearchResponse
+import prasad.vennam.android.data.remote.datasources.response.SearchFilters
+import prasad.vennam.android.data.remote.datasources.response.SearchResponse
 import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
 
@@ -69,15 +74,6 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun searchMovie(queryText: String): Flow<ViewState<MovieListResponse>> {
-
-        return flow {
-            val searchedTrendingMovieResponse = movieService.searchMovie(queryText = queryText)
-
-            emit(ViewState.success(searchedTrendingMovieResponse))
-        }.flowOn(Dispatchers.IO)
-    }
-
     fun fetchSimilarMovies(id: Int): Flow<ViewState<MovieListResponse>> {
         return flow {
             val similarMovieResponse = movieService.fetchSimilarMovies(movieId = id)
@@ -86,13 +82,45 @@ class MovieRemoteRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun fetchGenreWiseMovies(genreId: String): Flow<ViewState<MovieListResponse>> {
+    fun fetchGenreWiseMovies(genreId: String): Flow<ViewState<MovieSearchResponse>> {
         return flow {
-
-            val trendingMovieListResponse = movieService.getMoviesByGenre(genreId = genreId)
-
-            emit(ViewState.success(trendingMovieListResponse))
+            val filters = MovieSearchFilters()
+                .page(2)
+                .withGenre(genreId.toInt())
+            val queryParams = SearchFilters.toQueryMap(filters)
+            val movieSearchResponse = movieService.discoverMovies(filters = queryParams)
+            emit(ViewState.success(movieSearchResponse))
         }.flowOn(Dispatchers.IO)
+    }
+
+    fun searchMovies(filters: MovieSearchFilters = MovieSearchFilters()): Flow<ViewState<MovieSearchResponse>> {
+        return flow {
+            val queryParams = SearchFilters.toQueryMap(filters)
+            val movieSearchResponse = movieService.searchMovies(filters = queryParams)
+            emit(ViewState.success(movieSearchResponse))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun discoverMovies(filters: MovieSearchFilters): Flow<ViewState<MovieSearchResponse>> {
+        return flow {
+            emit(ViewState.loading())
+            try {
+                val queryParams = SearchFilters.toQueryMap(filters)
+                val movieSearchResponse = movieService.discoverMovies(filters = queryParams)
+                emit(ViewState.success(movieSearchResponse))
+            } catch (e: Exception) {
+                emit(ViewState.error(e.message ?: "An error occurred"))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun searchMoviesPaged(filters: MovieSearchFilters): Flow<PagingData<SearchResponse>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                SearchMoviesPagingSource(movieService, filters)
+            }
+        ).flow
     }
 
 

@@ -14,7 +14,8 @@ class MoviePagingSource(private val apiService: MovieService) :
             val position = params.key ?: TMDB_STARTING_PAGE_INDEX
             val response = apiService.fetchAllTrendingMovies(position)
             LoadResult.Page(
-                data = response.results!!, prevKey = if (position == 1) null else position - 1,
+                data = response.results ?: emptyList(),
+                prevKey = if (position == 1) null else position - 1,
                 nextKey = position + 1
             )
         } catch (e: Exception) {

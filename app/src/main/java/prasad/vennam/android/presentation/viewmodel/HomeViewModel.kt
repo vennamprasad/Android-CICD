@@ -151,6 +151,7 @@ class HomeViewModel @Inject constructor(
     fun refreshAllData() {
         loadUpcomingMovieList()
         loadNowPlayingMovieList()
+        loadTrendingMoviesList()
     }
 
     fun refreshUpcomingMovies() {

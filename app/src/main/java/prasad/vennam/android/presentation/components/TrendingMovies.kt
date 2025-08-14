@@ -34,7 +34,6 @@ fun TrendingMovies(
                     onItemClickWatchList = {
 
                     },
-                    isBookmarked = item.isSaved
                 )
             }
         }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import prasad.vennam.android.data.remote.datasources.MovieRemoteRepository
-import prasad.vennam.android.data.remote.datasources.response.MovieResponse
+import prasad.vennam.android.data.remote.datasources.response.SearchResponse
 import prasad.vennam.android.utils.Status
 import prasad.vennam.android.utils.ViewState
 import javax.inject.Inject
@@ -19,8 +19,8 @@ class GenreWiseMoviesViewModel @Inject constructor(
     private val movieRemoteRepository: MovieRemoteRepository,
 ) : ViewModel() {
     private val _genreWiseMovies =
-        MutableStateFlow<ViewState<List<MovieResponse>>>(ViewState.loading())
-    val genreWiseMovies: StateFlow<ViewState<List<MovieResponse>>> = _genreWiseMovies
+        MutableStateFlow<ViewState<List<SearchResponse>>>(ViewState.loading())
+    val genreWiseMovies: StateFlow<ViewState<List<SearchResponse>>> = _genreWiseMovies
 
     fun fetchGenreWiseMovies(genreId: String) {
         viewModelScope.launch {

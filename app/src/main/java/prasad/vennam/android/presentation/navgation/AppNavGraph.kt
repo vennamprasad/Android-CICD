@@ -14,19 +14,21 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import prasad.vennam.android.presentation.components.NetworkAwareScreen
 import prasad.vennam.android.presentation.screens.AppSplashScreen
 import prasad.vennam.android.presentation.screens.ForgotPasswordScreen
 import prasad.vennam.android.presentation.screens.GenreWiseMoviesScreen
 import prasad.vennam.android.presentation.screens.HomeScreen
 import prasad.vennam.android.presentation.screens.LoginScreen
 import prasad.vennam.android.presentation.screens.MovieDetailScreen
+import prasad.vennam.android.presentation.screens.MovieSearchScreen
+import prasad.vennam.android.presentation.screens.NetworkAwareScreen
 import prasad.vennam.android.presentation.screens.OnboardingScreen
 import prasad.vennam.android.presentation.screens.SignUpScreen
 import prasad.vennam.android.presentation.screens.WatchlistScreen
 import prasad.vennam.android.presentation.viewmodel.GenreWiseMoviesViewModel
 import prasad.vennam.android.presentation.viewmodel.HomeViewModel
 import prasad.vennam.android.presentation.viewmodel.MovieDetailsViewmodel
+import prasad.vennam.android.presentation.viewmodel.MovieSearchViewModel
 import prasad.vennam.android.presentation.viewmodel.WatchListViewModel
 import prasad.vennam.android.utils.Status
 
@@ -109,7 +111,9 @@ fun AppNavGraph(
 
                 },
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigate(Route.Onboarding.route) {
+                        popUpTo(Route.SignUp.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -117,7 +121,9 @@ fun AppNavGraph(
         composable(Route.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.ForgotPassword.route) { inclusive = true }
+                    }
                 },
                 onResetPasswordClick = {
                     navController.navigate(Route.Login.route) {
@@ -141,6 +147,7 @@ fun AppNavGraph(
                             popUpTo(Route.Home.route) { inclusive = false }
                         }
                     },
+                    onSearchClick = { navController.navigate("search") }
                 )
             }
         }
@@ -243,6 +250,23 @@ fun AppNavGraph(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(Route.Search.route) {
+            NetworkAwareScreen {
+                val searchViewModel: MovieSearchViewModel = hiltViewModel()
+                MovieSearchScreen(
+                    viewModel = searchViewModel,
+                    onMovieClick = { movieId ->
+                        navController.navigate(Route.MovieDetails.route + "/${movieId}") {
+                            popUpTo(Route.Search.route) { inclusive = false }
+                        }
+                    },
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import prasad.vennam.android.data.remote.datasources.response.MovieResponse
+import prasad.vennam.android.data.remote.datasources.response.SearchResponse
 import prasad.vennam.android.presentation.components.CommonPosterCard
 
 @Composable
@@ -26,7 +26,7 @@ fun GenreWiseMoviesScreen(
     genreName: String,
     onMovieClick: (movieId: Int) -> Unit,
     onBackClick: () -> Boolean,
-    movies: List<MovieResponse>
+    movies: List<SearchResponse>
 ) {
     Scaffold(
         modifier = Modifier,
@@ -52,7 +52,7 @@ fun GenreWiseMoviesContent(
     modifier: Modifier,
     genreId: String,
     onMovieClick: (movieId: Int) -> Unit,
-    movies: List<MovieResponse>
+    movies: List<SearchResponse>
 ) {
     GenreWiseMoviesList(
         modifier = modifier, genreId = genreId, onMovieClick = onMovieClick, movies = movies
@@ -64,7 +64,7 @@ fun GenreWiseMoviesList(
     modifier: Modifier = Modifier,
     genreId: String,
     onMovieClick: (Int) -> Unit,
-    movies: List<MovieResponse>
+    movies: List<SearchResponse>
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(3),
@@ -80,7 +80,6 @@ fun GenreWiseMoviesList(
                     onItemClickWatchList = {
 
                     },
-                    isBookmarked = item.isSaved
                 )
             }
         }

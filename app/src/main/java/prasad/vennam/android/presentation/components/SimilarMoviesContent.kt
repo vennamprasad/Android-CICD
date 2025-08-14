@@ -49,7 +49,6 @@ fun SimilarMoviesContent(
                     onItemClickWatchList = {
 
                     },
-                    isBookmarked = item.isSaved
                 )
             }
         }

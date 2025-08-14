@@ -2,7 +2,7 @@ package prasad.vennam.android.data.remote.datasources.response
 
 import com.google.gson.annotations.SerializedName
 
-data class Search(
+data class SearchResponse(
     @SerializedName("adult")
     val adult: Boolean?,
     @SerializedName("backdrop_path")

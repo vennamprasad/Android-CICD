@@ -1,4 +1,4 @@
-package prasad.vennam.android.presentation.components
+package prasad.vennam.android.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

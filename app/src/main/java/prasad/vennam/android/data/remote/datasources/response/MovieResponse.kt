@@ -25,19 +25,27 @@ data class MovieResponse(
     @SerializedName("overview")
     val overview: String? = null,
 
-    @SerializedName("adult") val adult: Boolean? = null,
+    @SerializedName("adult")
+    val adult: Boolean? = null,
 
-    @SerializedName("genre_ids") val genreIds: List<Int>? = null,
+    @SerializedName("genre_ids")
+    val genreIds: List<Int>? = null,
 
-    @SerializedName("original_title") val originalTitle: String? = null,
+    @SerializedName("original_title")
+    val originalTitle: String? = null,
 
-    @SerializedName("popularity") val popularity: Double? = null,
+    @SerializedName("popularity")
+    val popularity: Double? = null,
 
-    @SerializedName("release_date") val releaseDate: String? = null,
+    @SerializedName("release_date")
+    val releaseDate: String? = null,
 
-    @SerializedName("video") val video: Boolean? = null,
+    @SerializedName("video")
+    val video: Boolean? = null,
 
-    @SerializedName("vote_count") val voteCount: Int? = null,
+    @SerializedName("vote_count")
+    val voteCount: Int? = null,
 
-    @SerializedName("is_saved") var isSaved: Boolean = false
+    @SerializedName("is_saved")
+    var isSaved: Boolean = false
 )
