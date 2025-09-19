@@ -104,7 +104,6 @@ fun NoInternetScreen(
 }
 
 
-
 @Composable
 @Preview
 fun NoInternetScreenPreview() {

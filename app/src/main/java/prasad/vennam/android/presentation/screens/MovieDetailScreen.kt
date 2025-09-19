@@ -13,11 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Note
-import androidx.compose.material.icons.automirrored.outlined.Note
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +43,7 @@ import prasad.vennam.android.domain.model.MovieFullDetails
 import prasad.vennam.android.domain.model.TrendingMovie
 import prasad.vennam.android.presentation.components.CastContent
 import prasad.vennam.android.presentation.components.GenreGridContent
+import prasad.vennam.android.presentation.components.LoadingIndicator
 import prasad.vennam.android.presentation.components.MoviePoster
 import prasad.vennam.android.presentation.components.SimilarMoviesContent
 import prasad.vennam.android.presentation.viewmodel.MovieDetailsViewmodel
@@ -66,9 +64,11 @@ fun MovieDetailScreen(
 
     when (movieFullDetailState.status) {
         Status.LOADING -> {
-            Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
         }
 
         Status.SUCCESS -> {

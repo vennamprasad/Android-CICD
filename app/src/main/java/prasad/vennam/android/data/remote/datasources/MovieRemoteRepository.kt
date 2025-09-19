@@ -15,6 +15,7 @@ import prasad.vennam.android.data.remote.datasources.response.MovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieSearchFilters
 import prasad.vennam.android.data.remote.datasources.response.MovieSearchResponse
+import prasad.vennam.android.data.remote.datasources.response.PersonCredits
 import prasad.vennam.android.data.remote.datasources.response.SearchFilters
 import prasad.vennam.android.data.remote.datasources.response.SearchResponse
 import prasad.vennam.android.utils.ViewState
@@ -121,6 +122,20 @@ class MovieRemoteRepository @Inject constructor(
                 SearchMoviesPagingSource(movieService, filters)
             }
         ).flow
+    }
+
+    fun getPopularPeople(): Flow<ViewState<CastsResponse>> {
+        return flow {
+            val popularPeopleResponse = movieService.fetchPopularPeople(1)
+            emit(ViewState.success(popularPeopleResponse))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun getPersonMovieCredits(personId: Int): Flow<ViewState<PersonCredits>> {
+        return flow {
+            val personCredits = movieService.getPersonMovieCredits(personId)
+            emit(ViewState.success(personCredits))
+        }.flowOn(Dispatchers.IO)
     }
 
 

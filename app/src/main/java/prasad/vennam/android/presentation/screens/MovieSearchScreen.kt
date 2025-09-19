@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,14 +43,17 @@ fun MovieSearchScreen(
     onBackClick: () -> Unit, viewModel: MovieSearchViewModel, onMovieClick: (Int) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var includeAdult by remember { mutableStateOf(false) }
+    var region by remember { mutableStateOf<String?>(null) }
+    var year by remember { mutableStateOf<String?>(null) }
+    var appliedFilters by remember { mutableStateOf(MovieSearchFilters()) }
 
-    var filters by remember { mutableStateOf(MovieSearchFilters()) }
-    val lazyPagingItems = viewModel.searchMoviesPaged(filters).collectAsLazyPagingItems()
+    val lazyPagingItems = viewModel.searchMoviesPaged(appliedFilters).collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
         snapshotFlow { searchQuery }.debounce(500).filter { it.length >= 3 }.distinctUntilChanged()
             .collect { query ->
-                filters = MovieSearchFilters(query = query)
+                appliedFilters = MovieSearchFilters(query = query)
             }
     }
 
@@ -68,6 +72,20 @@ fun MovieSearchScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back"
+                    )
+                }
+            }, actions = {
+                IconButton(onClick = {
+                    appliedFilters = MovieSearchFilters(
+                        query = searchQuery,
+                        includeAdult = includeAdult,
+                        region = region?.takeIf { it.isNotBlank() },
+                        year = year?.toIntOrNull()
+                    )
+                }) {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Search"
                     )
                 }
             })

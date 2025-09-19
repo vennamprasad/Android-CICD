@@ -5,6 +5,7 @@ import prasad.vennam.android.data.remote.datasources.response.CastsResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieDetailResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieListResponse
 import prasad.vennam.android.data.remote.datasources.response.MovieSearchResponse
+import prasad.vennam.android.data.remote.datasources.response.PersonCredits
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -47,5 +48,11 @@ interface MovieService {
     suspend fun discoverMovies(
         @QueryMap filters: Map<String, String>
     ): MovieSearchResponse
+
+    @GET("person/{person_id}/movie_credits")
+    suspend fun getPersonMovieCredits(
+        @Path("person_id") personId: Int,
+    ): PersonCredits
+
 
 }

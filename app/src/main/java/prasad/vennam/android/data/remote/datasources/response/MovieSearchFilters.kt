@@ -36,12 +36,6 @@ data class MovieSearchFilters(
     fun voteAverageGte(value: Double) = copy(voteAverageGte = value)
     fun voteAverageLte(value: Double) = copy(voteAverageLte = value)
     fun voteCountGte(value: Int) = copy(voteCountGte = value)
-
-    fun releaseDateGte(date: String) = copy(releaseDateGte = date)
-    fun releaseDateLte(date: String) = copy(releaseDateLte = date)
-
-    fun runtimeGte(minutes: Int) = copy(withRuntimeGte = minutes)
-    fun runtimeLte(minutes: Int) = copy(withRuntimeLte = minutes)
 }
 
 object SearchFilters {

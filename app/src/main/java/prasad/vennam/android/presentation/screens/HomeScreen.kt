@@ -45,7 +45,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import prasad.vennam.android.domain.model.CommonMovie
 import prasad.vennam.android.domain.model.TrendingMovie
+import prasad.vennam.android.presentation.components.LoadingIndicator
 import prasad.vennam.android.presentation.components.NowPlayingMovies
+import prasad.vennam.android.presentation.components.SectionHeader
 import prasad.vennam.android.presentation.components.TrendingMovies
 import prasad.vennam.android.presentation.components.UpComingMovies
 import prasad.vennam.android.presentation.viewmodel.HomeViewModel
@@ -321,34 +323,6 @@ private fun NowPlayingMoviesSection(
                     .height(200.dp)
             )
         }
-    }
-}
-
-@Composable
-private fun SectionHeader(
-    title: String, modifier: Modifier = Modifier
-) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-}
-
-@Composable
-private fun LoadingIndicator(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier, contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary
-        )
     }
 }
 

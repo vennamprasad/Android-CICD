@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +34,7 @@ fun MyAppBar(title: String, onBackClick: () -> Unit) {
         ) {
             IconButton(onClick = onBackClick) {
                 Icon(
-                    Icons.Default.ArrowBackIosNew, contentDescription = "Back"
+                    Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back"
                 ) // Use Material Icons
             }
             Spacer(modifier = Modifier.weight(0.5f))

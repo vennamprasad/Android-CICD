@@ -2,11 +2,14 @@ package prasad.vennam.android.presentation.navgation
 
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -14,6 +17,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import prasad.vennam.android.presentation.components.LoadingIndicator
 import prasad.vennam.android.presentation.screens.AppSplashScreen
 import prasad.vennam.android.presentation.screens.ForgotPasswordScreen
 import prasad.vennam.android.presentation.screens.GenreWiseMoviesScreen
@@ -224,14 +228,11 @@ fun AppNavGraph(
                     }
 
                     Status.LOADING -> {
-                        Box {
-                            Text(
-                                modifier = Modifier.align(alignment = Alignment.Center),
-                                text = trendingMovieListState.value.message
-                                    ?: "Error loading movies",
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
+                        LoadingIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        )
                     }
                 }
             }
@@ -252,9 +253,10 @@ fun AppNavGraph(
             )
         }
 
-        composable(Route.Search.route) {
+        composable(Route.Search.route) { backStackEntry ->
             NetworkAwareScreen {
-                val searchViewModel: MovieSearchViewModel = hiltViewModel()
+                val searchViewModel: MovieSearchViewModel =
+                    hiltViewModel<MovieSearchViewModel>(backStackEntry)
                 MovieSearchScreen(
                     viewModel = searchViewModel,
                     onMovieClick = { movieId ->

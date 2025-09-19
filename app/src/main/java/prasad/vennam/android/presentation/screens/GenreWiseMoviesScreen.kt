@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,7 +67,7 @@ fun GenreWiseMoviesList(
     movies: List<SearchResponse>
 ) {
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(3),
+        columns = StaggeredGridCells.Fixed(2),
         modifier = modifier.padding(16.dp),
         content = {
             items(movies.size) { index ->
@@ -108,7 +108,7 @@ fun GenreWiseMoviesTopBar(onBackClick: () -> Boolean, genreName: String) {
                 onBackClick()
             }) {
                 Icon(
-                    Icons.Default.ArrowBackIosNew, contentDescription = "Back"
+                    Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back"
                 )
             }
         },

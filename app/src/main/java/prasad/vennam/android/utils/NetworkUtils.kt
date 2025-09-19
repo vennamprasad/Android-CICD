@@ -31,6 +31,7 @@ object NetworkUtils {
             connectivityManager.activeNetworkInfo?.isConnected ?: false
         }
     }
+
     private val _networkType = MutableStateFlow(NetworkType.UNKNOWN)
     val networkType: StateFlow<NetworkType> get() = _networkType
 
