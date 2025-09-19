@@ -2,6 +2,19 @@
 
 A modern Android application built with Jetpack Compose, Kotlin, Hilt, and The Movie Database (TMDB) APIs. This project follows best practices with modular architecture, dependency injection, and Jetpack libraries.
 
+# Screenshots
+
+<p float="left">
+  <img src="app-outputs/home.png" alt="Home Screen" width="200"/>
+  <img src="app-outputs/search.png" alt="Search Screen" width="200"/>
+  <img src="app-outputs/genere.png" alt="Genere Screen" width="200"/>
+</p>
+
+<p float="left">
+  <img src="app-outputs/watchlist.png" alt="Watchlist Screen" width="200"/>
+  <img src="app-outputs/details.png" alt="Details Screen" width="200"/>
+</p>
+
 ---
 
 ## 🚀 Features
